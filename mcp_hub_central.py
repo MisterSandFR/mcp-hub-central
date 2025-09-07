@@ -104,6 +104,9 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                         print(f"Server {server_id} configured but offline: {e}")
                     else:
                         print(f"Server {server_id} discovery failed: {e}")
+                    
+                    # Toujours inclure le serveur dans la découverte pour affichage
+                    discovered_servers[server_id] = server_config
         
         return discovered_servers
     
@@ -1603,12 +1606,38 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                            class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white text-sm transition-colors">
                             ❤️ Health
                         </a>
-                        {f'<span class="bg-red-600 px-2 py-1 rounded text-xs text-white">Erreur: {server_config.get("error", "Unknown")}</span>' if status == "offline" and server_config.get("error") else ""}
+                        {f'<span class="bg-red-600 px-2 py-1 rounded text-xs text-white">Erreur: {self.format_error_message(server_config.get("error", "Unknown"))}</span>' if status == "offline" and server_config.get("error") else ""}
                     </div>
                 </div>
             """
         
         return cards_html
+
+    def format_error_message(self, error_msg):
+        """Formater le message d'erreur pour l'affichage"""
+        if not error_msg or error_msg == "Unknown":
+            return "Serveur non accessible"
+        
+        # Messages d'erreur courants et leurs traductions
+        error_translations = {
+            "Connection refused": "Connexion refusée",
+            "Name or service not known": "Serveur introuvable",
+            "timeout": "Délai d'attente dépassé",
+            "Connection timed out": "Connexion expirée",
+            "Network is unreachable": "Réseau inaccessible",
+            "No route to host": "Aucun chemin vers l'hôte"
+        }
+        
+        # Chercher une traduction
+        for key, translation in error_translations.items():
+            if key in str(error_msg):
+                return translation
+        
+        # Si pas de traduction trouvée, retourner un message générique
+        if len(str(error_msg)) > 50:
+            return str(error_msg)[:47] + "..."
+        
+        return str(error_msg)
 
     def send_404_response(self):
         print(f"404 - Path not found: {self.path}")
