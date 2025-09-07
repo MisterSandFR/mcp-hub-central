@@ -1,0 +1,114 @@
+{
+  "servers": {
+    "supabase": {
+      "name": "Supabase MCP Server",
+      "version": "3.1.0",
+      "description": "Enhanced Edition v3.1 - 47 MCP tools for 100% autonomous Supabase management",
+      "host": "supabase-mcp-server",
+      "port": 8001,
+      "path": "/supabase",
+      "protocol": "http",
+      "status": "active",
+      "tools_count": 47,
+      "categories": ["database", "auth", "storage", "realtime", "security", "migration", "monitoring", "performance"],
+      "github_url": "https://github.com/MisterSandFR/Supabase-MCP-SelfHosted",
+      "always_works": true,
+      "domain": "supabase.mcp.coupaul.fr"
+    },
+    "files": {
+      "name": "File Manager MCP Server",
+      "version": "1.0.0",
+      "description": "Advanced file management with MCP tools",
+      "host": "files-mcp-server",
+      "port": 8002,
+      "path": "/files",
+      "protocol": "http",
+      "status": "active",
+      "tools_count": 15,
+      "categories": ["file_operations", "storage", "backup"],
+      "github_url": "https://github.com/coupaul/files-mcp-server",
+      "always_works": false,
+      "domain": "files.mcp.coupaul.fr"
+    },
+    "git": {
+      "name": "Git MCP Server",
+      "version": "1.0.0",
+      "description": "Git repository management with MCP tools",
+      "host": "git-mcp-server",
+      "port": 8003,
+      "path": "/git",
+      "protocol": "http",
+      "status": "active",
+      "tools_count": 12,
+      "categories": ["repository", "version_control", "collaboration"],
+      "github_url": "https://github.com/coupaul/git-mcp-server",
+      "always_works": false,
+      "domain": "git.mcp.coupaul.fr"
+    },
+    "web": {
+      "name": "Web Scraping MCP Server",
+      "version": "1.0.0",
+      "description": "Web scraping and data extraction with MCP tools",
+      "host": "web-mcp-server",
+      "port": 8004,
+      "path": "/web",
+      "protocol": "http",
+      "status": "active",
+      "tools_count": 8,
+      "categories": ["scraping", "data_extraction", "automation"],
+      "github_url": "https://github.com/coupaul/web-mcp-server",
+      "always_works": false,
+      "domain": "web.mcp.coupaul.fr"
+    }
+  },
+  "hub": {
+    "name": "MCP Hub Central",
+    "version": "1.0.0",
+    "description": "Multi-server MCP hub for centralized management",
+    "total_servers": 4,
+    "total_tools": 82,
+    "domain": "mcp.coupaul.fr",
+    "features": [
+      "automatic_discovery",
+      "intelligent_routing",
+      "load_balancing",
+      "centralized_monitoring",
+      "unified_interface",
+      "advanced_security",
+      "real_time_metrics"
+    ]
+  },
+  "routing": {
+    "strategy": "capability_based",
+    "fallback_server": "supabase",
+    "load_balancing": {
+      "enabled": true,
+      "algorithm": "round_robin",
+      "health_check_interval": 30
+    }
+  },
+  "security": {
+    "jwt_auth": true,
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 100,
+      "burst_limit": 20
+    },
+    "cors": {
+      "enabled": true,
+      "allowed_origins": ["*"],
+      "allowed_methods": ["GET", "POST", "OPTIONS"],
+      "allowed_headers": ["Content-Type", "Authorization"]
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_endpoint": "/api/metrics",
+    "health_check_interval": 30,
+    "alerting": {
+      "enabled": true,
+      "email": "alerts@mcp.coupaul.fr",
+      "webhook": "https://hooks.slack.com/services/..."
+    }
+  }
+}

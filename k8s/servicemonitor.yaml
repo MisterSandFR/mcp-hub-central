@@ -1,0 +1,18 @@
+# MCP Hub Central - ServiceMonitor pour Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mcp-hub-central-monitor
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+spec:
+  selector:
+    matchLabels:
+      app: mcp-hub-central
+  endpoints:
+  - port: http
+    path: /api/metrics
+    interval: 30s
+    scrapeTimeout: 10s

@@ -1,0 +1,45 @@
+# MCP Hub Central - RBAC
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mcp-hub-central-sa
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: mcp-hub-central-role
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mcp-hub-central-rolebinding
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+subjects:
+- kind: ServiceAccount
+  name: mcp-hub-central-sa
+  namespace: mcp-hub-central
+roleRef:
+  kind: Role
+  name: mcp-hub-central-role
+  apiGroup: rbac.authorization.k8s.io

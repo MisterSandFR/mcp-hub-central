@@ -1,0 +1,213 @@
+# MCP Hub Central - Docker Compose
+# Orchestration complète des services MCP
+
+version: '3.8'
+
+services:
+  # Hub Central - Point d'entrée principal
+  mcp-hub-central:
+    build: .
+    container_name: mcp-hub-central
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - MCP_HUB_VERSION=1.0.0
+      - NODE_ENV=production
+    volumes:
+      - ./mcp_servers_config.json:/app/mcp_servers_config.json:ro
+      - ./logs:/app/logs
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mcp-hub.rule=Host(`mcp.coupaul.fr`)"
+      - "traefik.http.routers.mcp-hub.entrypoints=websecure"
+      - "traefik.http.routers.mcp-hub.tls.certresolver=letsencrypt"
+
+  # Serveur Supabase MCP
+  supabase-mcp-server:
+    image: supabase-mcp-selfhosted:latest
+    container_name: supabase-mcp-server
+    ports:
+      - "8001:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_AUTH_JWT_SECRET=${SUPABASE_AUTH_JWT_SECRET}
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    depends_on:
+      - mcp-hub-central
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.supabase-mcp.rule=Host(`supabase.mcp.coupaul.fr`)"
+      - "traefik.http.routers.supabase-mcp.entrypoints=websecure"
+      - "traefik.http.routers.supabase-mcp.tls.certresolver=letsencrypt"
+
+  # Serveur File Manager MCP
+  files-mcp-server:
+    image: files-mcp-server:latest
+    container_name: files-mcp-server
+    ports:
+      - "8002:8000"
+    environment:
+      - FILES_ROOT_PATH=/app/files
+      - MAX_FILE_SIZE=100MB
+    volumes:
+      - ./data/files:/app/files
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    depends_on:
+      - mcp-hub-central
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.files-mcp.rule=Host(`files.mcp.coupaul.fr`)"
+      - "traefik.http.routers.files-mcp.entrypoints=websecure"
+      - "traefik.http.routers.files-mcp.tls.certresolver=letsencrypt"
+
+  # Serveur Git MCP
+  git-mcp-server:
+    image: git-mcp-server:latest
+    container_name: git-mcp-server
+    ports:
+      - "8003:8000"
+    environment:
+      - GIT_ROOT_PATH=/app/repos
+      - GIT_USER_NAME=${GIT_USER_NAME}
+      - GIT_USER_EMAIL=${GIT_USER_EMAIL}
+    volumes:
+      - ./data/repos:/app/repos
+      - ~/.ssh:/root/.ssh:ro
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    depends_on:
+      - mcp-hub-central
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.git-mcp.rule=Host(`git.mcp.coupaul.fr`)"
+      - "traefik.http.routers.git-mcp.entrypoints=websecure"
+      - "traefik.http.routers.git-mcp.tls.certresolver=letsencrypt"
+
+  # Serveur Web Scraping MCP
+  web-mcp-server:
+    image: web-mcp-server:latest
+    container_name: web-mcp-server
+    ports:
+      - "8004:8000"
+    environment:
+      - SCRAPING_TIMEOUT=30
+      - MAX_CONCURRENT_REQUESTS=10
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    depends_on:
+      - mcp-hub-central
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web-mcp.rule=Host(`web.mcp.coupaul.fr`)"
+      - "traefik.http.routers.web-mcp.entrypoints=websecure"
+      - "traefik.http.routers.web-mcp.tls.certresolver=letsencrypt"
+
+  # Reverse Proxy Traefik
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@mcp.coupaul.fr"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--log.level=INFO"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard Traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.mcp.coupaul.fr`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+
+  # Monitoring avec Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.mcp.coupaul.fr`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+
+  # Grafana pour les dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.mcp.coupaul.fr`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+
+networks:
+  mcp-network:
+    driver: bridge
+    name: mcp-network
+
+volumes:
+  prometheus_data:
+    name: prometheus_data
+  grafana_data:
+    name: grafana_data

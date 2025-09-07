@@ -1,0 +1,73 @@
+# MCP Hub Central - Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-hub-central
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mcp-hub-central
+  template:
+    metadata:
+      labels:
+        app: mcp-hub-central
+        version: "1.0.0"
+    spec:
+      containers:
+      - name: mcp-hub-central
+        image: mcp-hub-central:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "8000"
+        - name: MCP_HUB_VERSION
+          value: "1.0.0"
+        - name: NODE_ENV
+          value: "production"
+        volumeMounts:
+        - name: config
+          mountPath: /app/mcp_servers_config.json
+          subPath: mcp_servers_config.json
+          readOnly: true
+        - name: logs
+          mountPath: /app/logs
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: mcp-hub-config
+      - name: logs
+        emptyDir: {}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

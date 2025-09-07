@@ -1,0 +1,96 @@
+# MCP Hub Central - Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-hub-central-service
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  selector:
+    app: mcp-hub-central
+---
+# MCP Hub Central - Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcp-hub-central-ingress
+  namespace: mcp-hub-central
+  labels:
+    app: mcp-hub-central
+    version: "1.0.0"
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  tls:
+  - hosts:
+    - mcp.coupaul.fr
+    - supabase.mcp.coupaul.fr
+    - files.mcp.coupaul.fr
+    - git.mcp.coupaul.fr
+    - web.mcp.coupaul.fr
+    secretName: mcp-hub-central-tls
+  rules:
+  - host: mcp.coupaul.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mcp-hub-central-service
+            port:
+              number: 8000
+  - host: supabase.mcp.coupaul.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: supabase-mcp-service
+            port:
+              number: 8000
+  - host: files.mcp.coupaul.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: files-mcp-service
+            port:
+              number: 8000
+  - host: git.mcp.coupaul.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: git-mcp-service
+            port:
+              number: 8000
+  - host: web.mcp.coupaul.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-mcp-service
+            port:
+              number: 8000

@@ -1,0 +1,36 @@
+# MCP Hub Central - Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: mcp-hub-central
+  namespace: mcp-hub-central
+
+resources:
+- namespace.yaml
+- configmap.yaml
+- rbac.yaml
+- deployment.yaml
+- service-ingress.yaml
+- hpa.yaml
+- servicemonitor.yaml
+
+commonLabels:
+  app: mcp-hub-central
+  version: "1.0.0"
+  managed-by: kustomize
+
+images:
+- name: mcp-hub-central
+  newTag: latest
+
+patchesStrategicMerge:
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: mcp-hub-central
+  spec:
+    template:
+      spec:
+        serviceAccountName: mcp-hub-central-sa

@@ -1,0 +1,9 @@
+# MCP Hub Central - Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcp-hub-central
+  labels:
+    name: mcp-hub-central
+    app: mcp-hub
+    version: "1.0.0"
