@@ -37,9 +37,9 @@
       "deployment": "railway",
       "mcpc_version": "1.6.4",
       "docker_enabled": true,
-      "timeout": 30,
-      "retry_attempts": 3,
-      "health_check_timeout": 30
+      "timeout": 10,
+      "retry_attempts": 1,
+      "health_check_timeout": 10
     }
   },
   "hub": {
@@ -65,7 +65,7 @@
     "load_balancing": {
       "enabled": true,
       "algorithm": "round_robin",
-      "health_check_interval": 30
+      "health_check_interval": 120
     }
   },
   "security": {
@@ -85,7 +85,9 @@
   "monitoring": {
     "enabled": true,
     "metrics_endpoint": "/api/metrics",
-    "health_check_interval": 30,
+    "health_check_interval": 120,
+    "cache_duration": 300,
+    "discovery_timeout": 10,
     "alerting": {
       "enabled": true,
       "email": "alerts@mcp.coupaul.fr",
