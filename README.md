@@ -37,7 +37,7 @@ mcp.coupaul.fr (Hub Central)
 
 ```bash
 # Cloner le repository
-git clone https://github.com/coupaul/mcp-hub-central.git
+git clone https://github.com/MisterSandFR/mcp-hub-central.git
 cd mcp-hub-central
 
 # Installer les dépendances
@@ -165,8 +165,8 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 - 📧 Email : support@mcp.coupaul.fr
 - 💬 Discord : [Serveur MCP Community](https://discord.gg/mcp)
-- 🐛 Issues : [GitHub Issues](https://github.com/coupaul/mcp-hub-central/issues)
+- 🐛 Issues : [GitHub Issues](https://github.com/MisterSandFR/mcp-hub-central/issues)
 
 ---
 
-**Fait avec ❤️ par [coupaul](https://github.com/coupaul)**
+**Fait avec ❤️ par [MisterSandFR](https://github.com/MisterSandFR)**

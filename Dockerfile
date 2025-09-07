@@ -4,7 +4,7 @@
 FROM python:3.11-slim
 
 # Métadonnées
-LABEL maintainer="coupaul <support@mcp.coupaul.fr>"
+LABEL maintainer="MisterSandFR <support@mcp.coupaul.fr>"
 LABEL description="MCP Hub Central - Centre de contrôle unifié pour tous les serveurs MCP"
 LABEL version="1.0.0"
 
@@ -50,8 +50,8 @@ CMD ["python", "mcp_hub_central.py"]
 # Métadonnées supplémentaires
 LABEL org.opencontainers.image.title="MCP Hub Central"
 LABEL org.opencontainers.image.description="Centre de contrôle unifié pour tous les serveurs MCP"
-LABEL org.opencontainers.image.url="https://github.com/coupaul/mcp-hub-central"
-LABEL org.opencontainers.image.source="https://github.com/coupaul/mcp-hub-central"
+LABEL org.opencontainers.image.url="https://github.com/MisterSandFR/mcp-hub-central"
+LABEL org.opencontainers.image.source="https://github.com/MisterSandFR/mcp-hub-central"
 LABEL org.opencontainers.image.version="1.0.0"
 LABEL org.opencontainers.image.created="2024-01-01T00:00:00Z"
 LABEL org.opencontainers.image.licenses="MIT"
