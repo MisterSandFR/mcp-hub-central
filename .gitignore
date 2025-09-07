@@ -1,0 +1,18 @@
+# Fichiers générés par Claude
+.claude/
+
+# Fichiers de configuration Claude
+.claudeignore
+.claude-config
+
+# Logs et cache Claude
+.claude-logs/
+.claude-cache/
+
+# Fichiers temporaires Claude
+.claude-temp/
+.claude-backup/
+
+# Fichiers de session Claude
+.claude-session/
+.claude-context/
