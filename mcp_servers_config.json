@@ -29,14 +29,17 @@
       "path": "/minecraft",
       "protocol": "https",
       "status": "active",
-      "tools_count": 12,
+      "tools_count": 4,
       "categories": ["gaming", "server_management", "automation", "world_management", "mcpc"],
       "github_url": "https://github.com/[USERNAME]/minecraft-mcpc-mcp-server",
       "always_works": false,
       "domain": "minecraft.mcp.coupaul.fr",
       "deployment": "railway",
       "mcpc_version": "1.6.4",
-      "docker_enabled": true
+      "docker_enabled": true,
+      "timeout": 30,
+      "retry_attempts": 3,
+      "health_check_timeout": 30
     }
   },
   "hub": {
