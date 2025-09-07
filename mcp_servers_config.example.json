@@ -59,14 +59,30 @@
       "github_url": "https://github.com/coupaul/web-mcp-server",
       "always_works": false,
       "domain": "web.mcp.coupaul.fr"
+    },
+    "minecraft": {
+      "name": "Minecraft MCP Server",
+      "version": "1.0.0",
+      "description": "Minecraft server management and automation with MCP tools",
+      "host": "localhost",
+      "port": 3000,
+      "path": "/minecraft",
+      "protocol": "http",
+      "status": "active",
+      "tools_count": 12,
+      "categories": ["gaming", "server_management", "automation", "world_management"],
+      "github_url": "https://github.com/MisterSandFR/minecraft-mcp-server",
+      "always_works": false,
+      "domain": "minecraft.mcp.coupaul.fr",
+      "info_endpoint": "/mcp/info"
     }
   },
   "hub": {
     "name": "MCP Hub Central",
     "version": "1.0.0",
     "description": "Multi-server MCP hub for centralized management",
-    "total_servers": 4,
-    "total_tools": 82,
+    "total_servers": 5,
+    "total_tools": 94,
     "domain": "mcp.coupaul.fr",
     "features": [
       "automatic_discovery",

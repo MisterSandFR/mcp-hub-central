@@ -120,6 +120,29 @@ services:
       - "traefik.http.routers.web-mcp.entrypoints=websecure"
       - "traefik.http.routers.web-mcp.tls.certresolver=letsencrypt"
 
+  # Serveur Minecraft MCP
+  minecraft-mcp-server:
+    image: minecraft-mcp-server:latest
+    container_name: minecraft-mcp-server
+    ports:
+      - "3000:3000"
+    environment:
+      - MINECRAFT_SERVER_PATH=/app/minecraft-server
+      - MINECRAFT_VERSION=latest
+      - MAX_PLAYERS=20
+    volumes:
+      - ./data/minecraft:/app/minecraft-server
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    depends_on:
+      - mcp-hub-central
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minecraft-mcp.rule=Host(`minecraft.mcp.coupaul.fr`)"
+      - "traefik.http.routers.minecraft-mcp.entrypoints=websecure"
+      - "traefik.http.routers.minecraft-mcp.tls.certresolver=letsencrypt"
+
   # Reverse Proxy Traefik
   traefik:
     image: traefik:v3.0

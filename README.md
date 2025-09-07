@@ -24,7 +24,8 @@ mcp.coupaul.fr (Hub Central)
     ├── supabase.mcp.coupaul.fr → Supabase MCP Server
     ├── files.mcp.coupaul.fr → File Manager MCP Server
     ├── git.mcp.coupaul.fr → Git MCP Server
-    └── web.mcp.coupaul.fr → Web Scraping MCP Server
+    ├── web.mcp.coupaul.fr → Web Scraping MCP Server
+    └── minecraft.mcp.coupaul.fr → Minecraft MCP Server
 ```
 
 ## 🚀 Démarrage Rapide
@@ -71,6 +72,7 @@ Le Hub peut découvrir et router vers :
 - **File Manager MCP** : Gestion de fichiers avancée
 - **Git MCP Server** : Gestion de repositories Git
 - **Web Scraping MCP** : Scraping et extraction de données
+- **Minecraft MCP Server** : Gestion et automatisation de serveurs Minecraft
 - **Custom MCP Servers** : Serveurs personnalisés
 
 ### Configuration des Serveurs
