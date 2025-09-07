@@ -21,26 +21,28 @@
       "production_mode": true
     },
     "minecraft": {
-      "name": "Minecraft MCP Server",
-      "version": "1.0.0",
-      "description": "Minecraft server management and automation with MCP tools",
-      "host": "localhost",
+      "name": "Minecraft MCPC+ 1.6.4 Server",
+      "version": "1.6.4",
+      "description": "MCPC+ 1.6.4 server management and automation with MCP tools - Compatible with MCP Hub Central",
+      "host": "minecraft.mcp.coupaul.fr",
       "port": 3000,
       "path": "/minecraft",
-      "protocol": "http",
+      "protocol": "https",
       "status": "active",
       "tools_count": 12,
-      "categories": ["gaming", "server_management", "automation", "world_management"],
-      "github_url": "#",
+      "categories": ["gaming", "server_management", "automation", "world_management", "mcpc"],
+      "github_url": "https://github.com/[USERNAME]/minecraft-mcpc-mcp-server",
       "always_works": false,
       "domain": "minecraft.mcp.coupaul.fr",
-      "info_endpoint": "/mcp/info"
+      "deployment": "railway",
+      "mcpc_version": "1.6.4",
+      "docker_enabled": true
     }
   },
   "hub": {
     "name": "MCP Hub Central",
-    "version": "1.0.0",
-    "description": "Multi-server MCP hub for centralized management",
+    "version": "3.1.0",
+    "description": "Multi-server MCP hub for centralized management - Now with MCPC+ 1.6.4 support",
     "total_servers": 2,
     "total_tools": 59,
     "domain": "mcp.coupaul.fr",
