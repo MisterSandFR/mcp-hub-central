@@ -18,7 +18,9 @@
       "health_endpoint": "/health",
       "supabase_url": "https://api.recube.gg/",
       "anon_key": "eyJhbGciOiJIUzI1NiIs...",
-      "production_mode": true
+      "production_mode": true,
+      "discovery_path": "/health",
+      "discovery_timeout": 5
     },
     "minecraft": {
       "name": "Minecraft MCPC+ 1.6.4 Server",
@@ -37,6 +39,8 @@
       "deployment": "railway",
       "mcpc_version": "1.6.4",
       "docker_enabled": true,
+      "discovery_path": "/health",
+      "discovery_timeout": 5,
       "timeout": 10,
       "retry_attempts": 1,
       "health_check_timeout": 10
@@ -44,7 +48,7 @@
   },
   "hub": {
     "name": "MCP Hub Central",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "description": "Multi-server MCP hub for centralized management - Now with MCPC+ 1.6.4 support",
     "total_servers": 2,
     "total_tools": 58,
