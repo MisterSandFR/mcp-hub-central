@@ -1593,11 +1593,7 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                     </div>
                     
                     <div class="flex space-x-4">
-                        <a href="{server_config.get("github_url", "#")}" 
-                           target="_blank" 
-                           class="bg-primary hover:bg-blue-700 px-4 py-2 rounded text-white text-sm transition-colors">
-                            📁 GitHub
-                        </a>
+                        {f'<a href="{server_config.get("github_url", "#")}" target="_blank" class="bg-primary hover:bg-blue-700 px-4 py-2 rounded text-white text-sm transition-colors">📁 GitHub</a>' if server_config.get("github_url") != "#" else '<span class="bg-gray-600 px-4 py-2 rounded text-white text-sm cursor-not-allowed">📁 GitHub</span>'}
                         <a href="/api/tools" 
                            class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-white text-sm transition-colors">
                             🔧 API Tools

@@ -37,7 +37,7 @@ services:
     image: supabase-mcp-selfhosted:latest
     container_name: supabase-mcp-server
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - SUPABASE_URL=https://api.recube.gg/
       - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}

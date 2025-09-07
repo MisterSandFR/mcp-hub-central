@@ -165,7 +165,7 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 ## 📞 Support
 
-- 📧 Email : support@mcp.coupaul.fr
+- 📧 Email : contact@coupaul.fr
 - 💬 Discord : [Serveur MCP Community](https://discord.gg/mcp)
 - 🐛 Issues : [GitHub Issues](https://github.com/MisterSandFR/mcp-hub-central/issues)
 
