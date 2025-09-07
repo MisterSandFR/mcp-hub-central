@@ -68,7 +68,7 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                     health_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}/health"
                     req = urllib.request.Request(health_url)
                     
-                    with urllib.request.urlopen(req, timeout=5) as response:
+                    with urllib.request.urlopen(req, timeout=3) as response:
                         if response.status == 200:
                             server_config["health_status"] = "online"
                             server_config["last_seen"] = datetime.now().isoformat()
@@ -77,7 +77,7 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                             tools_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}/api/tools"
                             try:
                                 tools_req = urllib.request.Request(tools_url)
-                                with urllib.request.urlopen(tools_req, timeout=5) as tools_response:
+                                with urllib.request.urlopen(tools_req, timeout=3) as tools_response:
                                     if tools_response.status == 200:
                                         tools_data = json.loads(tools_response.read().decode())
                                         server_config["available_tools"] = len(tools_data)
@@ -89,10 +89,21 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                             discovered_servers[server_id] = server_config
                         else:
                             server_config["health_status"] = "offline"
+                            server_config["error"] = f"HTTP {response.status}"
                 except Exception as e:
-                    print(f"Server {server_id} discovery failed: {e}")
+                    # Gestion gracieuse des erreurs de découverte
                     server_config["health_status"] = "offline"
                     server_config["error"] = str(e)
+                    server_config["last_seen"] = datetime.now().isoformat()
+                    
+                    # Pour les serveurs configurés mais non démarrés, les inclure quand même
+                    if server_config.get("always_works", False):
+                        server_config["available_tools"] = server_config.get("tools_count", 0)
+                        server_config["tools"] = []
+                        discovered_servers[server_id] = server_config
+                        print(f"Server {server_id} configured but offline: {e}")
+                    else:
+                        print(f"Server {server_id} discovery failed: {e}")
         
         return discovered_servers
     
@@ -1428,6 +1439,11 @@ class MCPHubHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html; charset=utf-8')
         self.end_headers()
         
+        # Récupérer les serveurs découverts pour l'affichage
+        discovered_servers = self.discover_servers()
+        online_servers = len([s for s in discovered_servers.values() if s.get("health_status") == "online"])
+        total_tools = sum(s.get("available_tools", 0) for s in discovered_servers.values())
+        
         html_content = f"""
 <!DOCTYPE html>
 <html lang="fr" class="dark">
@@ -1458,9 +1474,9 @@ class MCPHubHandler(BaseHTTPRequestHandler):
             <h1 class="text-4xl font-bold text-primary mb-4">MCP Hub</h1>
             <p class="text-xl text-gray-300 mb-6">Centre de contrôle pour tous vos serveurs MCP</p>
             <div class="flex justify-center space-x-4">
-                <span class="bg-green-600 px-3 py-1 rounded-full text-sm">1 Serveur</span>
-                <span class="bg-blue-600 px-3 py-1 rounded-full text-sm">47 Outils</span>
-                <span class="bg-purple-600 px-3 py-1 rounded-full text-sm">En ligne</span>
+                <span class="bg-green-600 px-3 py-1 rounded-full text-sm">{len(discovered_servers)} Serveurs</span>
+                <span class="bg-blue-600 px-3 py-1 rounded-full text-sm">{total_tools} Outils</span>
+                <span class="bg-purple-600 px-3 py-1 rounded-full text-sm">{online_servers} En ligne</span>
             </div>
         </header>
 
@@ -1468,59 +1484,7 @@ class MCPHubHandler(BaseHTTPRequestHandler):
         <section class="mb-12">
             <h2 class="text-2xl font-semibold mb-6 text-center">Serveurs MCP Disponibles</h2>
             <div class="grid md:grid-cols-1 gap-6">
-                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-primary transition-colors">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-semibold text-primary">Supabase MCP Server v3.1.0</h3>
-                        <span class="bg-green-600 px-2 py-1 rounded text-sm">En ligne</span>
-                    </div>
-                    <p class="text-gray-300 mb-4">Enhanced Edition v3.1 - 47 MCP tools for 100% autonomous Supabase management</p>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-primary">47</div>
-                            <div class="text-sm text-gray-400">Outils</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-500">8</div>
-                            <div class="text-sm text-gray-400">Catégories</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-500">100%</div>
-                            <div class="text-sm text-gray-400">Autonome</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-purple-500">⭐ 15+</div>
-                            <div class="text-sm text-gray-400">GitHub</div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-wrap gap-2 mb-4">
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">tools</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">production_mode</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">database_management</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">migrations</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">auth</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">storage</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">rls</span>
-                        <span class="bg-gray-700 px-2 py-1 rounded text-xs">realtime</span>
-                    </div>
-                    
-                    <div class="flex space-x-4">
-                        <a href="https://github.com/MisterSandFR/Supabase-MCP-SelfHosted" 
-                           target="_blank" 
-                           class="bg-primary hover:bg-blue-700 px-4 py-2 rounded text-white text-sm transition-colors">
-                            📁 GitHub
-                        </a>
-                        <a href="/api/tools" 
-                           class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-white text-sm transition-colors">
-                            🔧 API Tools
-                        </a>
-                        <a href="/health" 
-                           class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white text-sm transition-colors">
-                            ❤️ Health
-                        </a>
-                    </div>
-                </div>
+                {self.generate_server_cards(discovered_servers)}
             </div>
         </section>
 
@@ -1576,6 +1540,75 @@ class MCPHubHandler(BaseHTTPRequestHandler):
 </html>
         """
         self.wfile.write(html_content.encode('utf-8'))
+
+    def generate_server_cards(self, discovered_servers):
+        """Générer les cartes des serveurs MCP dynamiquement"""
+        cards_html = ""
+        
+        for server_id, server_config in discovered_servers.items():
+            status = server_config.get("health_status", "offline")
+            status_color = "bg-green-600" if status == "online" else "bg-red-600"
+            status_text = "En ligne" if status == "online" else "Hors ligne"
+            
+            tools_count = server_config.get("available_tools", server_config.get("tools_count", 0))
+            categories = server_config.get("categories", [])
+            
+            # Générer les badges de catégories
+            category_badges = ""
+            for category in categories[:8]:  # Limiter à 8 catégories
+                category_badges += f'<span class="bg-gray-700 px-2 py-1 rounded text-xs">{category}</span>'
+            
+            cards_html += f"""
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-primary transition-colors">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-primary">{server_config["name"]}</h3>
+                        <span class="{status_color} px-2 py-1 rounded text-sm">{status_text}</span>
+                    </div>
+                    <p class="text-gray-300 mb-4">{server_config["description"]}</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-primary">{tools_count}</div>
+                            <div class="text-sm text-gray-400">Outils</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-500">{len(categories)}</div>
+                            <div class="text-sm text-gray-400">Catégories</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-500">{server_config.get("port", "N/A")}</div>
+                            <div class="text-sm text-gray-400">Port</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-500">v{server_config.get("version", "1.0")}</div>
+                            <div class="text-sm text-gray-400">Version</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {category_badges}
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <a href="{server_config.get("github_url", "#")}" 
+                           target="_blank" 
+                           class="bg-primary hover:bg-blue-700 px-4 py-2 rounded text-white text-sm transition-colors">
+                            📁 GitHub
+                        </a>
+                        <a href="/api/tools" 
+                           class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-white text-sm transition-colors">
+                            🔧 API Tools
+                        </a>
+                        <a href="/health" 
+                           class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white text-sm transition-colors">
+                            ❤️ Health
+                        </a>
+                        {f'<span class="bg-red-600 px-2 py-1 rounded text-xs text-white">Erreur: {server_config.get("error", "Unknown")}</span>' if status == "offline" and server_config.get("error") else ""}
+                    </div>
+                </div>
+            """
+        
+        return cards_html
 
     def send_404_response(self):
         print(f"404 - Path not found: {self.path}")
