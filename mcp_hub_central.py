@@ -64,11 +64,15 @@ class MCPHubHandler(BaseHTTPRequestHandler):
         for server_id, server_config in self.servers_config["servers"].items():
             if server_config["status"] == "active":
                 try:
+                    # Utiliser le path de découverte configuré ou /health par défaut
+                    discovery_path = server_config.get("discovery_path", "/health")
+                    discovery_timeout = server_config.get("discovery_timeout", 5)
+                    
                     # Tester la connectivité du serveur
-                    health_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}/health"
+                    health_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}{discovery_path}"
                     req = urllib.request.Request(health_url)
                     
-                    with urllib.request.urlopen(req, timeout=3) as response:
+                    with urllib.request.urlopen(req, timeout=discovery_timeout) as response:
                         if response.status == 200:
                             server_config["health_status"] = "online"
                             server_config["last_seen"] = datetime.now().isoformat()
@@ -77,7 +81,7 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                             tools_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}/api/tools"
                             try:
                                 tools_req = urllib.request.Request(tools_url)
-                                with urllib.request.urlopen(tools_req, timeout=3) as tools_response:
+                                with urllib.request.urlopen(tools_req, timeout=discovery_timeout) as tools_response:
                                     if tools_response.status == 200:
                                         tools_data = json.loads(tools_response.read().decode())
                                         server_config["available_tools"] = len(tools_data)

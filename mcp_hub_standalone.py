@@ -86,10 +86,14 @@ class MCPHubStandaloneHandler(BaseHTTPRequestHandler):
                 else:
                     # Test de connectivité normal pour les serveurs externes
                     try:
-                        health_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}/health"
+                        # Utiliser le path de découverte configuré ou /health par défaut
+                        discovery_path = server_config.get("discovery_path", "/health")
+                        discovery_timeout = server_config.get("discovery_timeout", 5)
+                        
+                        health_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}{discovery_path}"
                         req = urllib.request.Request(health_url)
                         
-                        with urllib.request.urlopen(req, timeout=3) as response:
+                        with urllib.request.urlopen(req, timeout=discovery_timeout) as response:
                             if response.status == 200:
                                 server_config["health_status"] = "online"
                                 server_config["last_seen"] = datetime.now().isoformat()
