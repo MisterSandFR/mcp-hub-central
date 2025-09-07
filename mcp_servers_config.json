@@ -4,8 +4,8 @@
       "name": "Supabase MCP Server",
       "version": "3.1.0",
       "description": "Enhanced Edition v3.1 - 47 MCP tools for 100% autonomous Supabase management",
-      "host": "supabase-mcp-server",
-      "port": 8001,
+      "host": "0.0.0.0",
+      "port": 8000,
       "path": "/supabase",
       "protocol": "http",
       "status": "active",
@@ -13,7 +13,12 @@
       "categories": ["database", "auth", "storage", "realtime", "security", "migration", "monitoring", "performance"],
       "github_url": "https://github.com/MisterSandFR/Supabase-MCP-SelfHosted",
       "always_works": true,
-      "domain": "supabase.mcp.coupaul.fr"
+      "domain": "supabase.mcp.coupaul.fr",
+      "mcp_endpoint": "/mcp",
+      "health_endpoint": "/health",
+      "supabase_url": "https://api.recube.gg/",
+      "anon_key": "eyJhbGciOiJIUzI1NiIs...",
+      "production_mode": true
     },
     "files": {
       "name": "File Manager MCP Server",

@@ -5,7 +5,7 @@
       "version": "3.1.0",
       "description": "Enhanced Edition v3.1 - 47 MCP tools for 100% autonomous Supabase management",
       "host": "localhost",
-      "port": 8001,
+      "port": 8000,
       "path": "/supabase",
       "protocol": "http",
       "status": "active",
@@ -13,7 +13,12 @@
       "categories": ["database", "auth", "storage", "realtime", "security", "migration", "monitoring", "performance"],
       "github_url": "https://github.com/MisterSandFR/Supabase-MCP-SelfHosted",
       "always_works": true,
-      "domain": "supabase.mcp.coupaul.fr"
+      "domain": "supabase.mcp.coupaul.fr",
+      "mcp_endpoint": "/mcp",
+      "health_endpoint": "/health",
+      "supabase_url": "https://your-project.supabase.co/",
+      "anon_key": "eyJhbGciOiJIUzI1NiIs...",
+      "production_mode": true
     },
     "files": {
       "name": "File Manager MCP Server",
