@@ -1,174 +1,217 @@
-# MCP Hub Central
+# 🚀 MCP Hub Central - Écosystème de Serveurs MCP
 
-🚀 **Hub Central Multi-Serveurs MCP** - Centre de contrôle unifié pour tous vos serveurs MCP
+[![Version](https://img.shields.io/badge/version-3.7.0-blue.svg)](https://github.com/coupaul/mcp-hub-central)
+[![Smithery.ai](https://img.shields.io/badge/Smithery.ai-compliant-green.svg)](https://smithery.ai)
+[![Railway](https://img.shields.io/badge/deployed%20on-Railway-0B0D0E.svg)](https://railway.app)
 
-## 🌟 Fonctionnalités
+## 📋 Vue d'ensemble
 
-- 🔍 **Découverte automatique** des serveurs MCP
-- 🧠 **Routage intelligent** basé sur les capacités
-- ⚖️ **Load balancing** automatique
-- 📊 **Monitoring centralisé** de tous les serveurs
-- 🌐 **Interface web unifiée** moderne
-- 🔒 **Sécurité avancée** avec authentification
-- 📈 **Métriques en temps réel**
+Ce workspace contient un écosystème complet de serveurs MCP (Model Context Protocol) interconnectés, optimisés pour la conformité Smithery.ai et la maintenabilité.
 
-## 🏗️ Architecture
+### 🏗️ Architecture des Projets
 
 ```
-mcp.coupaul.fr (Hub Central)
-├── 🔍 Découverte automatique
-├── 🧠 Routage intelligent
-├── ⚖️ Load balancing
-├── 📊 Monitoring
-└── 🌐 Interface unifiée
-    ├── supabase.mcp.coupaul.fr → Supabase MCP Server
-    ├── files.mcp.coupaul.fr → File Manager MCP Server
-    ├── git.mcp.coupaul.fr → Git MCP Server
-    ├── web.mcp.coupaul.fr → Web Scraping MCP Server
-    └── minecraft.mcp.coupaul.fr → Minecraft MCP Server
+mcp-hub-central/
+├── 🎯 Hub Central (Gestionnaire principal)
+├── 🗄️ Supabase MCP Server (54+ outils)
+└── 🎮 Minecraft MCP Server (4 outils spécialisés)
 ```
 
-## 🚀 Démarrage Rapide
+## 🎯 Projets Inclus
 
-### Prérequis
-- Python 3.8+
-- Docker & Docker Compose (optionnel)
+### 1. **Hub Central** (`mcp-hub-central/`)
+- **Rôle**: Gestionnaire central des serveurs MCP
+- **Type**: Hub de coordination
+- **Smithery**: ❌ Non nécessaire (hub interne)
+- **URL**: https://mcp.coupaul.fr
+- **Port**: 8080
 
-### Installation
+### 2. **Supabase MCP Server** (`ng-supabase-mcp/`)
+- **Rôle**: Serveur MCP pour gestion complète Supabase
+- **Type**: Serveur MCP autonome
+- **Smithery**: ✅ Configuré (`smithery.yaml`)
+- **URL**: https://supabase.mcp.coupaul.fr
+- **Port**: 8000
+- **Outils**: 54 outils MCP
 
-```bash
-# Cloner le repository
-git clone https://github.com/MisterSandFR/mcp-hub-central.git
-cd mcp-hub-central
+### 3. **Minecraft MCP Server** (`Minecraft-MCP-Forge-1.6.4/`)
+- **Rôle**: Serveur MCP pour développement Minecraft MCPC+ 1.6.4
+- **Type**: Serveur MCP spécialisé
+- **Smithery**: ✅ Configuré (`smithery-metadata.json`)
+- **URL**: https://minecraft.mcp.coupaul.fr
+- **Port**: 3000
+- **Outils**: 4 outils MCP
 
-# Installer les dépendances
-pip install -r requirements.txt
+## 🔧 Configuration Standardisée
 
-# Configurer les serveurs MCP
-cp mcp_servers_config.example.json mcp_servers_config.json
-# Éditer mcp_servers_config.json avec vos serveurs
+### Versions Synchronisées
+- **Version commune**: `3.7.0`
+- **Date de release**: `2025-01-08`
+- **Standard**: `smithery-ai-compliant`
 
-# Démarrer le Hub
-python mcp_hub_central.py
+### Dépendances Unifiées
+```yaml
+# Python (tous projets)
+python: ">=3.11"
+fastapi: "0.104.1"
+uvicorn: "0.24.0"
+pydantic: "2.5.0"
+
+# Node.js (serveurs MCP)
+node: ">=18.0.0"
+@modelcontextprotocol/sdk: "^0.4.0"
 ```
 
-### Avec Docker
-
-```bash
-# Démarrer tous les services
-docker-compose up -d
-
-# Vérifier le statut
-docker-compose ps
-```
-
-## ⚙️ Configuration
-
-### Serveurs MCP Supportés
-
-Le Hub peut découvrir et router vers :
-
-- **Supabase MCP Server** : Gestion complète de Supabase
-- **File Manager MCP** : Gestion de fichiers avancée
-- **Git MCP Server** : Gestion de repositories Git
-- **Web Scraping MCP** : Scraping et extraction de données
-- **Minecraft MCP Server** : Gestion et automatisation de serveurs Minecraft
-- **Custom MCP Servers** : Serveurs personnalisés
-
-### Configuration des Serveurs
-
-```json
-{
-  "servers": {
-    "supabase": {
-      "name": "Supabase MCP Server",
-      "version": "3.1.0",
-      "host": "supabase-mcp-server",
-      "port": 8001,
-      "path": "/supabase",
-      "categories": ["database", "auth", "storage"],
-      "status": "active"
-    }
-  }
-}
-```
-
-## 🔧 API Endpoints
-
-### Hub Central
-- `GET /` - Interface web principale
-- `GET /health` - Health check du hub
-- `GET /api/servers` - Liste des serveurs découverts
-- `GET /api/discovery` - État de la découverte
-- `GET /api/metrics` - Métriques en temps réel
-
-### Routage Intelligent
-- `POST /mcp` - Routage automatique vers le bon serveur
-- `GET /.well-known/mcp-config` - Configuration MCP pour Smithery
-
-## 📊 Monitoring
-
-Le Hub fournit un monitoring complet :
-
-- **Statut des serveurs** en temps réel
-- **Métriques de performance** par serveur
-- **Logs centralisés** de tous les serveurs
-- **Alertes automatiques** en cas de problème
-
-## 🔒 Sécurité
-
-- **Authentification JWT** pour l'accès aux serveurs
-- **Rate limiting** par IP et utilisateur
-- **Chiffrement HTTPS** obligatoire
-- **Audit logs** de toutes les opérations
+### Configuration Partagée
+- **Fichier principal**: `mcp-projects-shared-config.yaml`
+- **Script de sync**: `sync_mcp_projects_smithery.sh`
+- **Environnements**: Production + Development
 
 ## 🚀 Déploiement
 
-### Railway (Recommandé)
+### Déploiement Automatique
 ```bash
-# Déployer sur Railway
-railway login
-railway init
-railway up
+# Synchroniser tous les projets
+./sync_mcp_projects_smithery.sh
+
+# Déployer le hub central
+cd mcp-hub-central && ./deploy_to_public_server.sh
+
+# Déployer Supabase MCP
+cd ng-supabase-mcp && ./scripts/deploy-selfhosted.sh
+
+# Déployer Minecraft MCP
+cd Minecraft-MCP-Forge-1.6.4 && ./deploy-railway.sh
 ```
 
-### Docker
+### Variables d'Environnement
 ```bash
-# Build et déploiement
-docker build -t mcp-hub-central .
-docker run -p 8000:8000 mcp-hub-central
+# Hub Central
+PORT=8080
+MCP_HUB_VERSION=3.7.0
+
+# Supabase MCP
+SUPABASE_URL=https://api.recube.gg/
+SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+
+# Minecraft MCP
+MINECRAFT_MCPC_VERSION=1.6.4
+DOCKER_ENABLED=true
 ```
 
-### Kubernetes
+## 📊 Conformité Smithery.ai
+
+### ✅ Standards Respectés
+
+#### Supabase MCP Server
+- **Format**: YAML (`smithery.yaml`)
+- **Métadonnées**: Complètes
+- **Outils**: 54 outils documentés
+- **Exemples**: 3 exemples d'utilisation
+- **Validation**: Schémas JSON valides
+
+#### Minecraft MCP Server
+- **Format**: JSON (`smithery-metadata.json`)
+- **Métadonnées**: Complètes
+- **Outils**: 4 outils spécialisés
+- **Exemples**: 3 exemples d'utilisation
+- **Validation**: Schémas JSON valides
+
+### 🔍 Validation Qualité
+- ✅ Champs requis présents
+- ✅ Schémas d'entrée valides
+- ✅ Exemples fonctionnels
+- ✅ Documentation complète
+- ✅ Versions synchronisées
+
+## 🛠️ Outils Disponibles
+
+### Supabase MCP (54 outils)
+- **Base de données**: `execute_sql`, `list_tables`, `backup_database`
+- **Authentification**: `create_auth_user`, `list_auth_users`, `manage_roles`
+- **Stockage**: `list_storage_buckets`, `manage_storage_policies`
+- **Migrations**: `create_migration`, `apply_migration`, `smart_migration`
+- **Sécurité**: `audit_security`, `manage_rls_policies`
+- **Monitoring**: `analyze_performance`, `metrics_dashboard`
+
+### Minecraft MCP (4 outils)
+- **Analyse**: `analyze_gui_spritesheet`
+- **Export**: `export_slices`
+- **Génération**: `generate_java_gui`
+- **Prévisualisation**: `preview_layout`
+
+## 📈 Monitoring et Maintenance
+
+### Health Checks
+- **Hub**: https://mcp.coupaul.fr/health
+- **Supabase**: https://supabase.mcp.coupaul.fr/health
+- **Minecraft**: https://minecraft.mcp.coupaul.fr/health
+
+### Logs et Métriques
+- **Format**: JSON structuré
+- **Rotation**: Automatique
+- **Niveau**: INFO par défaut
+- **Export**: Prometheus
+
+### Alertes
+- **Webhook**: Slack intégré
+- **Email**: admin@mcp.coupaul.fr
+- **Seuils**: Échec + Récupération
+
+## 🔄 Synchronisation et Maintenance
+
+### Script de Synchronisation
 ```bash
-# Déploiement K8s
-kubectl apply -f k8s/
+# Exécuter la synchronisation complète
+./sync_mcp_projects_smithery.sh
 ```
 
-## 🤝 Contribution
+### Vérifications Automatiques
+- ✅ Validation des configurations Smithery
+- ✅ Synchronisation des versions
+- ✅ Nettoyage des fichiers temporaires
+- ✅ Génération de rapports
 
-1. Fork le repository
-2. Créer une branche feature (`git checkout -b feature/amazing-feature`)
-3. Commit vos changements (`git commit -m 'Add amazing feature'`)
-4. Push vers la branche (`git push origin feature/amazing-feature`)
-5. Ouvrir une Pull Request
+## 📚 Documentation
 
-## 📄 Licence
+### Liens Utiles
+- **Hub Central**: [Documentation complète](./HUB_CENTRAL_UPDATE_GUIDE.md)
+- **Supabase MCP**: [README](./ng-supabase-mcp/README.md)
+- **Minecraft MCP**: [Documentation](./Minecraft-MCP-Forge-1.6.4/DOCUMENTATION.md)
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+### Support
+- **Issues**: [GitHub Issues](https://github.com/coupaul/mcp-hub-central/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/coupaul/mcp-hub-central/discussions)
+- **Email**: admin@mcp.coupaul.fr
 
-## 🙏 Remerciements
+## 🎯 Prochaines Étapes
 
-- [Smithery](https://smithery.ai) pour l'écosystème MCP
-- [Supabase](https://supabase.com) pour l'inspiration
-- La communauté MCP pour les contributions
+1. **Publication Smithery.ai**
+   - Publier Supabase MCP Server
+   - Publier Minecraft MCP Server
+   - Valider les intégrations
 
-## 📞 Support
+2. **Optimisations**
+   - Monitoring avancé
+   - Cache intelligent
+   - Performance tuning
 
-- 📧 Email : contact@coupaul.fr
-- 💬 Discord : [Serveur MCP Community](https://discord.gg/mcp)
-- 🐛 Issues : [GitHub Issues](https://github.com/MisterSandFR/mcp-hub-central/issues)
+3. **Extensions**
+   - Nouveaux outils MCP
+   - Intégrations supplémentaires
+   - Documentation enrichie
 
 ---
 
-**Fait avec ❤️ par [MisterSandFR](https://github.com/MisterSandFR)**
+## 📄 Licence
+
+MIT License - Voir [LICENSE](./LICENSE) pour plus de détails.
+
+## 👥 Contribution
+
+Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](./CONTRIBUTING.md) pour les guidelines.
+
+---
+
+*Dernière mise à jour: 8 janvier 2025 - Version 3.7.0*

@@ -1,0 +1,179 @@
+{
+  "folders": [
+    {
+      "name": "MCP Hub Central",
+      "path": "."
+    },
+    {
+      "name": "Supabase MCP Server",
+      "path": "../ng-supabase-mcp"
+    },
+    {
+      "name": "Minecraft MCP Server",
+      "path": "../Minecraft-MCP-Forge-1.6.4"
+    }
+  ],
+  "settings": {
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "python.defaultInterpreterPath": "python3.11",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.testing.pytestEnabled": true,
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/.pytest_cache": true,
+      "**/node_modules": true,
+      "**/.git": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/bower_components": true,
+      "**/*.code-search": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "files.associations": {
+      "*.yaml": "yaml",
+      "*.yml": "yaml",
+      "Dockerfile*": "dockerfile",
+      "*.mcp": "json"
+    },
+    "yaml.schemas": {
+      "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.flake8",
+      "ms-python.black-formatter",
+      "ms-python.pylint",
+      "ms-python.pytest",
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-docker",
+      "ms-vscode.vscode-json",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Sync All Projects",
+        "type": "shell",
+        "command": "./sync_mcp_projects.sh",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Test Hub Central",
+        "type": "shell",
+        "command": "python -m pytest",
+        "group": "test",
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Test Supabase MCP",
+        "type": "shell",
+        "command": "python -m pytest",
+        "group": "test",
+        "options": {
+          "cwd": "${workspaceFolder}/../ng-supabase-mcp"
+        },
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Test Minecraft MCP",
+        "type": "shell",
+        "command": "python -m pytest",
+        "group": "test",
+        "options": {
+          "cwd": "${workspaceFolder}/../Minecraft-MCP-Forge-1.6.4"
+        },
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Deploy All Projects",
+        "type": "shell",
+        "command": "echo 'Deploying all MCP projects...' && ./sync_mcp_projects.sh",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        }
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Hub Central",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/mcp_hub_central.py",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PORT": "8080",
+          "LOG_LEVEL": "DEBUG"
+        }
+      },
+      {
+        "name": "Debug Supabase MCP",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/../ng-supabase-mcp/main.py",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}/../ng-supabase-mcp",
+        "env": {
+          "PORT": "8000",
+          "LOG_LEVEL": "DEBUG"
+        }
+      },
+      {
+        "name": "Debug Minecraft MCP",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/../Minecraft-MCP-Forge-1.6.4/main.py",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}/../Minecraft-MCP-Forge-1.6.4",
+        "env": {
+          "PORT": "3000",
+          "LOG_LEVEL": "DEBUG"
+        }
+      }
+    ]
+  }
+}

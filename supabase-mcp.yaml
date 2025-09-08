@@ -1,0 +1,83 @@
+# Configuration Supabase MCP Server pour Smithery
+name: "Supabase MCP Server"
+url: "https://supabase.mcp.coupaul.fr"
+type: "mcp-server"
+version: "3.1.0"
+description: "Enhanced Edition v3.1 - 54+ MCP tools for 100% autonomous Supabase management"
+
+# Endpoints
+endpoints:
+  mcp: "/mcp"
+  health: "/health"
+  tools: "/api/tools"
+  config: "/.well-known/mcp-config"
+
+# Configuration Supabase
+supabase:
+  url: "https://api.recube.gg/"
+  anon_key: "${SUPABASE_ANON_KEY}"
+  service_role_key: "${SUPABASE_SERVICE_ROLE_KEY}"
+  auth_jwt_secret: "${SUPABASE_AUTH_JWT_SECRET}"
+
+# Capacités
+capabilities:
+  - "database"
+  - "auth"
+  - "storage"
+  - "realtime"
+  - "security"
+  - "migration"
+  - "monitoring"
+  - "performance"
+
+# Configuration des outils
+tools:
+  count: 54
+  auto_discovery: true
+  health_check_interval: 120
+  timeout: 15
+
+# Monitoring
+monitoring:
+  enabled: true
+  health_check_path: "/health"
+  alert_on_failure: true
+  log_level: "INFO"
+
+# Déploiement
+deployment:
+  platform: "railway"
+  domain: "supabase.mcp.coupaul.fr"
+  ssl_enabled: true
+  port: 443
+  protocol: "https"
+
+# Configuration de sécurité
+security:
+  ssl_verify: true
+  api_key_required: false
+  rate_limiting: true
+  max_requests_per_minute: 100
+
+# Configuration des logs
+logging:
+  level: "INFO"
+  format: "json"
+  output: "stdout"
+  file_rotation: true
+  max_file_size: "10MB"
+  max_files: 5
+
+# Configuration du cache
+cache:
+  enabled: true
+  ttl: 300
+  max_size: "100MB"
+  backend: "memory"
+
+# Configuration des métriques
+metrics:
+  enabled: true
+  collection_interval: 60
+  export_format: "prometheus"
+  endpoint: "/metrics"
