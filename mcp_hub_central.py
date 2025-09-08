@@ -5,6 +5,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime
 import threading
 import time
+import os
 
 def load_servers_config_static():
     """Charger la configuration des serveurs MCP (fonction statique)"""
@@ -12,7 +13,7 @@ def load_servers_config_static():
         with open('mcp_servers_config.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        # Configuration hybride Railway si le fichier n'existe pas
+        # Configuration hybride Railway avec variables d'environnement
         return {
             "servers": {
                 "supabase": {
@@ -31,11 +32,11 @@ def load_servers_config_static():
                     "domain": "supabase.mcp.coupaul.fr",
                     "mcp_endpoint": "/mcp",
                     "health_endpoint": "/health",
-                    "supabase_url": "https://api.recube.gg/",
-                    "anon_key": "eyJhbGciOiJIUzI1NiIs...",
+                    "supabase_url": os.getenv("SUPABASE_URL", "https://api.recube.gg/"),
+                    "anon_key": os.getenv("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIs..."),
                     "production_mode": True,
-                    "discovery_path": "/health",
-                    "discovery_timeout": 15
+                    "discovery_path": os.getenv("DISCOVERY_PATH", "/health"),
+                    "discovery_timeout": int(os.getenv("SUPABASE_DISCOVERY_TIMEOUT", "15"))
                 },
                 "minecraft": {
                     "name": "Minecraft MCPC+ 1.6.4 Server",
@@ -52,19 +53,19 @@ def load_servers_config_static():
                     "always_works": False,
                     "domain": "minecraft.mcp.coupaul.fr",
                     "deployment": "railway",
-                    "mcpc_version": "1.6.4",
+                    "mcpc_version": os.getenv("MINECRAFT_MCPC_VERSION", "1.6.4"),
                     "docker_enabled": True,
-                    "discovery_path": "/health",
-                    "discovery_timeout": 5,
+                    "discovery_path": os.getenv("DISCOVERY_PATH", "/health"),
+                    "discovery_timeout": int(os.getenv("MINECRAFT_DISCOVERY_TIMEOUT", "5")),
                     "timeout": 10,
                     "retry_attempts": 1,
                     "health_check_timeout": 10
                 }
             },
             "hub": {
-                "name": "MCP Hub Central",
-                "version": "3.6.0",
-                "description": "Multi-server MCP hub for centralized management - Hybrid configuration (Supabase public + Minecraft Railway internal)",
+                "name": os.getenv("MCP_HUB_NAME", "MCP Hub Central"),
+                "version": os.getenv("MCP_HUB_VERSION", "3.6.0"),
+                "description": os.getenv("MCP_HUB_DESCRIPTION", "Multi-server MCP hub for centralized management - Hybrid configuration (Supabase public + Minecraft Railway internal)"),
                 "total_servers": 2,
                 "total_tools": 58,
                 "domain": "mcp.coupaul.fr",
