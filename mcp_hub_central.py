@@ -282,8 +282,6 @@ class MCPHubHandler(BaseHTTPRequestHandler):
                         discovered_servers[server_id] = server_config
                     else:
                         print(f"Server {server_id} discovery failed: {e}")
-                
-                discovered_servers[server_id] = server_config
         
         return discovered_servers
 
