@@ -39,7 +39,7 @@ def load_servers_config_static():
                     "description": "MCPC+ 1.6.4 server management and automation with MCP tools - Compatible with MCP Hub Central",
                     "url": os.getenv("MINECRAFT_MCP_URL", "https://minecraft.mcp.coupaul.fr"),
                     "status": "online",
-                    "tools_count": 2,
+                    "tools_count": 4,
                     "categories": ["gaming", "server_management", "automation", "world_management", "mcpc"],
                     "github_url": "https://github.com/[USERNAME]/minecraft-mcpc-mcp-server",
                     "always_works": True,
