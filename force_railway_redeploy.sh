@@ -31,88 +31,126 @@ print_error() {
 print_status "=== FORÇAGE DU REDÉPLOIEMENT RAILWAY ==="
 
 echo ""
-print_status "=== 1. VÉRIFICATION DES COMMITS LOCAUX ==="
+print_status "=== 1. VÉRIFICATION DE L'ÉTAT ACTUEL ==="
 
-# Vérifier les commits locaux
-print_status "Commits locaux récents:"
-git log --oneline -5
+# Vérifier la version actuelle
+print_status "Vérification de la version actuelle..."
+current_version=$(curl -s "https://mcp.coupaul.fr/" | grep -i "version" | head -1)
+print_status "Version actuelle: $current_version"
 
-echo ""
-print_status "=== 2. VÉRIFICATION DU STATUT GIT ==="
-
-# Vérifier le statut git
-print_status "Statut Git:"
-git status
-
-echo ""
-print_status "=== 3. FORÇAGE DU PUSH ==="
-
-# Forcer le push
-print_status "Forçage du push vers GitHub..."
-git push origin master --force
-
-if [ $? -eq 0 ]; then
-    print_success "Push forcé réussi"
-else
-    print_error "Échec du push forcé"
-fi
+# Vérifier le statut des serveurs
+print_status "Vérification du statut des serveurs..."
+servers_status=$(curl -s "https://mcp.coupaul.fr/api/servers" | jq '.servers[] | {id: .id, status: .status}' 2>/dev/null || echo "Erreur de récupération")
+print_status "Statut des serveurs: $servers_status"
 
 echo ""
-print_status "=== 4. VÉRIFICATION DU WEBHOOK RAILWAY ==="
+print_status "=== 2. FORÇAGE DU REDÉPLOIEMENT ==="
 
-print_status "Railway devrait automatiquement redéployer après le push..."
-print_status "Attendre 2-3 minutes pour le redéploiement automatique"
+print_status "Méthodes pour forcer le redéploiement Railway:"
 
-echo ""
-print_status "=== 5. ACTIONS MANUELLES RAILWAY ==="
+print_status "1. 🔄 REDÉPLOIEMENT MANUEL:"
+print_status "   - Aller sur https://railway.app/dashboard"
+print_status "   - Sélectionner le projet MCP Hub Central"
+print_status "   - Cliquer sur 'Redeploy' ou 'Deploy'"
+print_status "   - Attendre 2-3 minutes"
 
-print_warning "Si le redéploiement automatique ne fonctionne pas:"
-print_status "1. Aller sur https://railway.app/dashboard"
-print_status "2. Sélectionner le projet 'mcp-hub-central'"
-print_status "3. Cliquer sur l'onglet 'Deployments'"
-print_status "4. Cliquer sur 'Redeploy' sur le dernier déploiement"
-print_status "5. Attendre 2-3 minutes"
+print_status "2. 🔧 REDÉPLOIEMENT VIA CLI:"
+print_status "   - Installer Railway CLI: npm install -g @railway/cli"
+print_status "   - Se connecter: railway login"
+print_status "   - Redéployer: railway up"
 
-echo ""
-print_status "=== 6. VÉRIFICATION DES LOGS RAILWAY ==="
+print_status "3. 📝 REDÉPLOIEMENT VIA WEBHOOK:"
+print_status "   - Aller sur GitHub: https://github.com/MisterSandFR/mcp-hub-central"
+print_status "   - Cliquer sur 'Actions'"
+print_status "   - Relancer la dernière action"
 
-print_warning "Vérifier les logs Railway pour les erreurs:"
-print_status "1. Aller sur Railway Dashboard"
-print_status "2. Sélectionner le projet"
-print_status "3. Cliquer sur l'onglet 'Logs'"
-print_status "4. Chercher les erreurs de build ou runtime"
-
-echo ""
-print_status "=== 7. VARIABLES D'ENVIRONNEMENT RAILWAY ==="
-
-print_warning "Vérifier les variables d'environnement:"
-print_status "1. Aller sur Railway Dashboard"
-print_status "2. Sélectionner le projet"
-print_status "3. Cliquer sur l'onglet 'Variables'"
-print_status "4. Vérifier que les variables sont à jour"
+print_status "4. 🚀 REDÉPLOIEMENT VIA COMMIT:"
+print_status "   - Faire un commit vide: git commit --allow-empty -m 'Force redeploy'"
+print_status "   - Pousser: git push origin master"
 
 echo ""
-print_status "=== 8. COMMANDES DE VÉRIFICATION ==="
+print_status "=== 3. VÉRIFICATION POST-REDÉPLOIEMENT ==="
 
 print_status "Après le redéploiement, vérifier:"
-print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.hub.version'"
-print_status "curl -w '@-' -o /dev/null -s 'https://mcp.coupaul.fr/' <<< 'time_total: %{time_total}\n'"
+
+print_status "1. 📊 Version du hub:"
+print_status "   curl -s 'https://mcp.coupaul.fr/' | grep -i 'version'"
+
+print_status "2. 🔍 Statut des serveurs:"
+print_status "   curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | {id: .id, status: .status}'"
+
+print_status "3. ⚙️ Configuration de découverte:"
+print_status "   curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | select(.id == \"supabase\") | .discovery_timeout'"
+
+print_status "4. 🎯 Test de découverte:"
+print_status "   curl -s 'https://supabase.mcp.coupaul.fr/health'"
+print_status "   curl -s 'https://minecraft.mcp.coupaul.fr/health'"
 
 echo ""
-print_status "=== 9. RÉSUMÉ ==="
+print_status "=== 4. DIAGNOSTIC DES PROBLÈMES ==="
 
-print_status "Actions effectuées:"
-print_status "1. ✅ Push forcé vers GitHub"
-print_status "2. ⏳ Attente du redéploiement Railway"
-print_status "3. 🔍 Vérification des logs Railway"
+print_status "Problèmes possibles:"
 
-print_status "Prochaines étapes:"
-print_status "1. Attendre 2-3 minutes"
-print_status "2. Vérifier les performances"
-print_status "3. Si problème persiste, redéployer manuellement"
+print_warning "1. 🔄 Railway ne redéploie pas:"
+print_status "   - Webhook GitHub cassé"
+print_status "   - Cache Railway persistant"
+print_status "   - Problème de build"
+
+print_warning "2. 📝 Code non déployé:"
+print_status "   - Ancienne version en cache"
+print_status "   - Problème de build"
+print_status "   - Variables d'environnement incorrectes"
+
+print_warning "3. ⚙️ Configuration incorrecte:"
+print_status "   - Fichier mcp_servers_config.json non trouvé"
+print_status "   - Configuration hardcodée obsolète"
+print_status "   - Paramètres de découverte incorrects"
 
 echo ""
-print_warning "🚨 CONCLUSION: Redéploiement Railway forcé"
-print_status "✅ SOLUTION: Attendre 2-3 minutes et vérifier les performances"
+print_status "=== 5. SOLUTIONS ==="
+
+print_status "Solutions recommandées:"
+
+print_status "1. 🎯 SOLUTION IMMÉDIATE: Redéploiement manuel"
+print_status "   - Aller sur Railway Dashboard"
+print_status "   - Cliquer sur 'Redeploy'"
+print_status "   - Attendre 2-3 minutes"
+
+print_status "2. 🔧 SOLUTION TECHNIQUE: Commit vide"
+print_status "   - git commit --allow-empty -m 'Force redeploy'"
+print_status "   - git push origin master"
+
+print_status "3. ⚙️ SOLUTION CONFIGURATION: Vérifier les fichiers"
+print_status "   - Vérifier que mcp_servers_config.json existe"
+print_status "   - Vérifier la configuration hardcodée"
+print_status "   - Vérifier les paramètres de découverte"
+
+print_status "4. 🚀 SOLUTION INFRASTRUCTURE: Nouveau projet"
+print_status "   - Créer un nouveau projet Railway"
+print_status "   - Déployer depuis zéro"
+print_status "   - Migrer la configuration"
+
+echo ""
+print_status "=== 6. COMMANDES DE TEST ==="
+
+print_status "Tester après redéploiement:"
+print_status "curl -s 'https://mcp.coupaul.fr/' | grep -i 'version'"
+print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | {id: .id, status: .status}'"
+
+print_status "Tester la découverte:"
+print_status "curl -s 'https://supabase.mcp.coupaul.fr/health'"
+print_status "curl -s 'https://minecraft.mcp.coupaul.fr/health'"
+
+echo ""
+print_status "=== 7. RÉSUMÉ ==="
+
+print_status "Actions à effectuer:"
+print_status "1. Forcer le redéploiement Railway"
+print_status "2. Attendre 2-3 minutes"
+print_status "3. Vérifier la version déployée"
+print_status "4. Tester la découverte des serveurs"
+
+print_warning "🚨 CONCLUSION: Railway n'a pas déployé les dernières corrections"
+print_status "✅ SOLUTION: Forcer le redéploiement Railway"
 
 exit 0

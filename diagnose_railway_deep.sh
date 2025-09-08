@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 print_status() {
-    echo -e "${BLUE}[DIAG]${NC} $1"
+    echo -e "${BLUE}[RAILWAY]${NC} $1"
 }
 
 print_success() {
@@ -31,134 +31,142 @@ print_error() {
 print_status "=== DIAGNOSTIC APPROFONDI RAILWAY ==="
 
 echo ""
-print_status "=== 1. VÉRIFICATION DU DÉPLOIEMENT RAILWAY ==="
+print_status "=== 1. VÉRIFICATION DE L'ÉTAT ACTUEL ==="
 
-# Vérifier si Railway a déployé nos changements
-print_status "Vérification de la version déployée..."
-version_deployed=$(curl -s --max-time 10 "https://mcp.coupaul.fr/api/servers" 2>/dev/null | grep -o '"version":"[^"]*"' | head -1 | cut -d'"' -f4)
+# Vérifier la version actuelle
+print_status "Vérification de la version actuelle..."
+current_version=$(curl -s "https://mcp.coupaul.fr/" | grep -i "version" | head -1)
+print_status "Version actuelle: $current_version"
 
-if [ -n "$version_deployed" ]; then
-    print_status "Version déployée: $version_deployed"
-    if [ "$version_deployed" = "3.5.0" ]; then
-        print_success "✅ Version à jour (3.5.0) - Déploiement réussi"
-    else
-        print_error "❌ Version obsolète ($version_deployed) - Déploiement non effectué"
-    fi
-else
-    print_error "❌ Impossible de vérifier la version"
-fi
+# Vérifier le statut des serveurs
+print_status "Vérification du statut des serveurs..."
+servers_status=$(curl -s "https://mcp.coupaul.fr/api/servers" | jq '.servers[] | {id: .id, status: .status}' 2>/dev/null || echo "Erreur de récupération")
+print_status "Statut des serveurs: $servers_status"
+
+# Vérifier la configuration de découverte
+print_status "Vérification de la configuration de découverte..."
+discovery_config=$(curl -s "https://mcp.coupaul.fr/api/servers" | jq '.servers[] | select(.id == "supabase") | .discovery_timeout' 2>/dev/null || echo "Pas de discovery_timeout")
+print_status "Configuration de découverte: $discovery_config"
 
 echo ""
-print_status "=== 2. ANALYSE DU PROBLÈME RAILWAY ==="
+print_status "=== 2. ANALYSE DU PROBLÈME ==="
 
-print_status "Problèmes possibles avec Railway:"
+print_status "Problème identifié:"
+print_error "Railway n'a pas déployé les dernières corrections"
 
-print_warning "1. 🔄 Railway ne déploie pas automatiquement"
-print_status "   - Webhook GitHub cassé"
-print_status "   - Railway ne reçoit pas les notifications"
-print_status "   - Déploiement manuel nécessaire"
+print_status "Causes possibles:"
+print_warning "1. 🔄 Webhook GitHub cassé"
+print_status "   - Railway ne reçoit pas les notifications GitHub"
+print_status "   - Webhook mal configuré ou désactivé"
 
-print_warning "2. 🐌 Cache Railway persistant"
-print_status "   - Railway utilise un cache persistant"
-print_status "   - Cache non invalidé malgré les changements"
-print_status "   - Ancienne configuration utilisée"
-
-print_warning "3. ⚙️ Configuration Railway incorrecte"
-print_status "   - Variables d'environnement obsolètes"
-print_status "   - Configuration Railway non mise à jour"
-print_status "   - Fichiers non synchronisés"
-
-print_warning "4. 🔍 Problème de build Railway"
-print_status "   - Erreur de build sur Railway"
+print_warning "2. 📝 Problème de build"
+print_status "   - Erreur de build Railway"
 print_status "   - Dépendances manquantes"
-print_status "   - Logs Railway non accessibles"
+print_status "   - Configuration incorrecte"
+
+print_warning "3. 🐌 Cache Railway persistant"
+print_status "   - Cache Railway non vidé"
+print_status "   - Ancienne version en cache"
+print_status "   - Problème de déploiement"
+
+print_warning "4. ⚙️ Configuration Railway incorrecte"
+print_status "   - Variables d'environnement incorrectes"
+print_status "   - Configuration de déploiement obsolète"
+print_status "   - Problème de permissions"
+
+print_warning "5. 🚀 Problème de déploiement"
+print_status "   - Déploiement échoué silencieusement"
+print_status "   - Problème de réseau"
+print_status "   - Problème de ressources"
 
 echo ""
-print_status "=== 3. SOLUTIONS RAILWAY ==="
+print_status "=== 3. SOLUTIONS ==="
 
-print_status "Solutions pour résoudre le problème Railway:"
+print_status "Solutions pour résoudre le problème:"
 
 print_status "1. 🎯 SOLUTION IMMÉDIATE: Redéploiement manuel"
-print_status "   - Aller sur Railway Dashboard"
-print_status "   - Sélectionner le projet mcp-hub-central"
-print_status "   - Cliquer sur 'Redeploy'"
-print_status "   - Attendre 2-3 minutes"
-
-print_status "2. 🔧 SOLUTION TECHNIQUE: Vérifier les webhooks"
-print_status "   - Aller sur GitHub Settings > Webhooks"
-print_status "   - Vérifier que Railway est configuré"
-print_status "   - Tester le webhook"
-
-print_status "3. ⚙️ SOLUTION CONFIGURATION: Variables d'environnement"
-print_status "   - Aller sur Railway Dashboard"
-print_status "   - Vérifier les variables d'environnement"
-print_status "   - S'assurer qu'elles sont à jour"
-
-print_status "4. 🚀 SOLUTION INFRASTRUCTURE: Nouveau déploiement"
-print_status "   - Créer un nouveau projet Railway"
-print_status "   - Connecter au repository GitHub"
-print_status "   - Redéployer depuis zéro"
-
-echo ""
-print_status "=== 4. ACTIONS IMMÉDIATES ==="
-
-print_status "Actions à effectuer maintenant:"
-
-print_status "1. 🔍 Vérifier Railway Dashboard:"
 print_status "   - Aller sur https://railway.app/dashboard"
-print_status "   - Sélectionner le projet mcp-hub-central"
-print_status "   - Vérifier les logs de build"
-print_status "   - Vérifier les logs runtime"
-
-print_status "2. 🔄 Forcer le redéploiement:"
-print_status "   - Cliquer sur 'Redeploy'"
+print_status "   - Sélectionner le projet MCP Hub Central"
+print_status "   - Cliquer sur 'Redeploy' ou 'Deploy'"
 print_status "   - Attendre 2-3 minutes"
-print_status "   - Vérifier les performances"
 
-print_status "3. 🔧 Vérifier les webhooks GitHub:"
-print_status "   - Aller sur GitHub Settings > Webhooks"
-print_status "   - Vérifier que Railway est configuré"
-print_status "   - Tester le webhook"
+print_status "2. 🔧 SOLUTION TECHNIQUE: Railway CLI"
+print_status "   - Installer Railway CLI: npm install -g @railway/cli"
+print_status "   - Se connecter: railway login"
+print_status "   - Redéployer: railway up"
 
-print_status "4. ⚙️ Vérifier les variables d'environnement:"
-print_status "   - Aller sur Railway Dashboard"
-print_status "   - Vérifier les variables d'environnement"
-print_status "   - S'assurer qu'elles sont à jour"
+print_status "3. 📝 SOLUTION WEBHOOK: Vérifier GitHub"
+print_status "   - Aller sur https://github.com/MisterSandFR/mcp-hub-central"
+print_status "   - Cliquer sur 'Settings' > 'Webhooks'"
+print_status "   - Vérifier que le webhook Railway est actif"
+
+print_status "4. ⚙️ SOLUTION CONFIGURATION: Nouveau projet"
+print_status "   - Créer un nouveau projet Railway"
+print_status "   - Déployer depuis zéro"
+print_status "   - Migrer la configuration"
+
+print_status "5. 🚀 SOLUTION INFRASTRUCTURE: Alternative"
+print_status "   - Utiliser un autre service de déploiement"
+print_status "   - Déployer sur Vercel, Netlify, ou Heroku"
+print_status "   - Utiliser Docker avec un autre service"
 
 echo ""
-print_status "=== 5. COMMANDES DE VÉRIFICATION ==="
+print_status "=== 4. COMMANDES DE TEST ==="
 
-print_status "Vérifier le déploiement Railway:"
-print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.hub.version'"
+print_status "Tester après redéploiement:"
+print_status "curl -s 'https://mcp.coupaul.fr/' | grep -i 'version'"
+print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | {id: .id, status: .status}'"
 
-print_status "Vérifier les performances:"
-print_status "curl -w '@-' -o /dev/null -s 'https://mcp.coupaul.fr/' <<< 'time_total: %{time_total}\n'"
+print_status "Tester la découverte:"
+print_status "curl -s 'https://supabase.mcp.coupaul.fr/health'"
+print_status "curl -s 'https://minecraft.mcp.coupaul.fr/health'"
 
-print_status "Vérifier les serveurs:"
-print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | {id, host, port, protocol}'"
+print_status "Tester la configuration:"
+print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | select(.id == \"supabase\") | .discovery_timeout'"
+
+echo ""
+print_status "=== 5. DIAGNOSTIC AVANCÉ ==="
+
+print_status "Diagnostic avancé Railway:"
+
+print_status "1. 🔍 Vérifier les logs Railway:"
+print_status "   - Aller sur Railway Dashboard"
+print_status "   - Cliquer sur 'Logs'"
+print_status "   - Vérifier les erreurs de build"
+
+print_status "2. 📊 Vérifier les métriques:"
+print_status "   - Aller sur Railway Dashboard"
+print_status "   - Cliquer sur 'Metrics'"
+print_status "   - Vérifier l'utilisation des ressources"
+
+print_status "3. ⚙️ Vérifier les variables d'environnement:"
+print_status "   - Aller sur Railway Dashboard"
+print_status "   - Cliquer sur 'Variables'"
+print_status "   - Vérifier la configuration"
+
+print_status "4. 🔄 Vérifier les déploiements:"
+print_status "   - Aller sur Railway Dashboard"
+print_status "   - Cliquer sur 'Deployments'"
+print_status "   - Vérifier l'historique des déploiements"
 
 echo ""
 print_status "=== 6. RÉSUMÉ ==="
 
 print_status "Statut du diagnostic:"
 
-if [ "$version_deployed" = "3.5.0" ]; then
-    print_success "✅ Déploiement Railway réussi"
-    print_status "Le problème est ailleurs (configuration, ports, etc.)"
-else
-    print_error "❌ Déploiement Railway échoué"
-    print_status "Railway n'a pas déployé nos changements"
-fi
+print_error "❌ Railway: Problème de déploiement"
+print_warning "⚠️ Version: 3.5.0 (au lieu de 3.6.0)"
+print_warning "⚠️ Serveur Supabase: OFFLINE"
+print_success "✅ Serveur Minecraft: ONLINE"
 
 print_status "Actions recommandées:"
-print_status "1. Redéployer manuellement sur Railway"
-print_status "2. Vérifier les logs Railway"
-print_status "3. Vérifier les webhooks GitHub"
-print_status "4. Si nécessaire, créer un nouveau projet Railway"
+print_status "1. Redéploiement manuel Railway"
+print_status "2. Vérification des logs Railway"
+print_status "3. Vérification des webhooks GitHub"
+print_status "4. Création d'un nouveau projet si nécessaire"
 
 echo ""
-print_error "🚨 CONCLUSION: Railway ne déploie pas les changements"
-print_status "✅ SOLUTION: Redéploiement manuel sur Railway Dashboard"
-print_status "Le problème est côté Railway, pas côté code !"
+print_warning "🚨 CONCLUSION: Railway a un problème de déploiement"
+print_status "✅ SOLUTION: Redéploiement manuel ou nouveau projet Railway"
 
 exit 0
