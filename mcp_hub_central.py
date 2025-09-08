@@ -35,7 +35,7 @@ def load_servers_config_static():
                     "anon_key": "eyJhbGciOiJIUzI1NiIs...",
                     "production_mode": True,
                     "discovery_path": "/health",
-                    "discovery_timeout": 10
+                    "discovery_timeout": 15
                 },
                 "minecraft": {
                     "name": "Minecraft MCPC+ 1.6.4 Server",
