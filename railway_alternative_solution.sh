@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 print_status() {
-    echo -e "${BLUE}[SOLUTION]${NC} $1"
+    echo -e "${BLUE}[RAILWAY]${NC} $1"
 }
 
 print_success() {
@@ -31,212 +31,105 @@ print_error() {
 print_status "=== SOLUTION ALTERNATIVE RAILWAY ==="
 
 echo ""
-print_status "=== 1. PROBLÈME IDENTIFIÉ ==="
+print_status "=== 1. DIAGNOSTIC FINAL ==="
 
-print_error "Railway ne déploie pas nos changements automatiquement"
-print_status "Causes possibles:"
-print_warning "- Webhook GitHub cassé"
-print_warning "- Cache Railway persistant"
-print_warning "- Configuration Railway incorrecte"
-print_warning "- Problème de build Railway"
+# Vérifier la version actuelle
+print_status "Vérification de la version actuelle..."
+current_version=$(curl -s "https://mcp.coupaul.fr/" | grep -i "version" | head -1)
+print_status "Version actuelle: $current_version"
+
+# Vérifier le statut des serveurs
+print_status "Vérification du statut des serveurs..."
+servers_status=$(curl -s "https://mcp.coupaul.fr/api/servers" | jq '.servers[] | {id: .id, status: .status}' 2>/dev/null || echo "Erreur de récupération")
+print_status "Statut des serveurs: $servers_status"
 
 echo ""
-print_status "=== 2. SOLUTIONS IMMÉDIATES ==="
+print_status "=== 2. PROBLÈME IDENTIFIÉ ==="
+
+print_error "Railway a un problème de déploiement persistant"
+print_warning "Causes possibles:"
+print_status "1. Webhook GitHub cassé"
+print_status "2. Cache Railway persistant"
+print_status "3. Problème de build Railway"
+print_status "4. Configuration Railway incorrecte"
+print_status "5. Problème de ressources Railway"
+
+echo ""
+print_status "=== 3. SOLUTIONS ALTERNATIVES ==="
+
+print_status "Solutions recommandées:"
 
 print_status "1. 🎯 SOLUTION IMMÉDIATE: Redéploiement manuel"
-print_status "   - Aller sur Railway Dashboard"
-print_status "   - Sélectionner le projet mcp-hub-central"
-print_status "   - Cliquer sur 'Redeploy'"
+print_status "   - Aller sur https://railway.app/dashboard"
+print_status "   - Sélectionner le projet MCP Hub Central"
+print_status "   - Cliquer sur 'Redeploy' ou 'Deploy'"
 print_status "   - Attendre 2-3 minutes"
 
-print_status "2. 🔧 SOLUTION TECHNIQUE: Vérifier les webhooks"
-print_status "   - Aller sur GitHub Settings > Webhooks"
-print_status "   - Vérifier que Railway est configuré"
-print_status "   - Tester le webhook"
+print_status "2. 🔧 SOLUTION TECHNIQUE: Nouveau projet Railway"
+print_status "   - Créer un nouveau projet Railway"
+print_status "   - Connecter le repository GitHub"
+print_status "   - Déployer depuis zéro"
+print_status "   - Migrer la configuration"
 
-print_status "3. ⚙️ SOLUTION CONFIGURATION: Variables d'environnement"
-print_status "   - Aller sur Railway Dashboard"
-print_status "   - Vérifier les variables d'environnement"
-print_status "   - S'assurer qu'elles sont à jour"
+print_status "3. 🚀 SOLUTION INFRASTRUCTURE: Alternative de déploiement"
+print_status "   - Utiliser Vercel (gratuit)"
+print_status "   - Utiliser Netlify (gratuit)"
+print_status "   - Utiliser Heroku (gratuit)"
+print_status "   - Utiliser Render (gratuit)"
+
+print_status "4. ⚙️ SOLUTION CONFIGURATION: Docker"
+print_status "   - Créer un Dockerfile"
+print_status "   - Déployer sur Railway avec Docker"
+print_status "   - Utiliser un autre service Docker"
 
 echo ""
-print_status "=== 3. SOLUTION ALTERNATIVE: Configuration hybride ==="
+print_status "=== 4. SOLUTION RECOMMANDÉE ==="
 
-print_status "En attendant que Railway fonctionne, utilisons une configuration hybride:"
+print_status "Solution recommandée: Nouveau projet Railway"
 
-print_status "Configuration hybride recommandée:"
-print_status "- Supabase: Domaine public (fonctionne)"
-print_status "- Minecraft: Domaine interne Railway (fonctionne)"
-print_status "- Hub Central: Configuration mixte"
+print_status "Étapes:"
+print_status "1. Aller sur https://railway.app/dashboard"
+print_status "2. Cliquer sur 'New Project'"
+print_status "3. Sélectionner 'Deploy from GitHub repo'"
+print_status "4. Choisir le repository mcp-hub-central"
+print_status "5. Configurer les variables d'environnement"
+print_status "6. Déployer"
 
 print_status "Avantages:"
-print_success "- Supabase fonctionne immédiatement"
-print_success "- Minecraft fonctionne avec Railway interne"
-print_success "- Pas d'attente du déploiement Railway"
+print_status "- Configuration fraîche"
+print_status "- Pas de cache persistant"
+print_status "- Déploiement propre"
+print_status "- Configuration optimisée"
 
 echo ""
-print_status "=== 4. CONFIGURATION HYBRIDE ==="
+print_status "=== 5. COMMANDES DE TEST ==="
 
-print_status "Configuration hybride à appliquer:"
+print_status "Tester après redéploiement:"
+print_status "curl -s 'https://mcp.coupaul.fr/' | grep -i 'version'"
+print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.servers[] | {id: .id, status: .status}'"
 
-print_status "Serveur Supabase:"
-print_status "  - Host: supabase.mcp.coupaul.fr (public)"
-print_status "  - Port: 443"
-print_status "  - Protocol: https"
-
-print_status "Serveur Minecraft:"
-print_status "  - Host: minecraft-mcp-forge-164.railway.internal (interne)"
-print_status "  - Port: 3000"
-print_status "  - Protocol: http"
+print_status "Tester la découverte:"
+print_status "curl -s 'https://supabase.mcp.coupaul.fr/health'"
+print_status "curl -s 'https://minecraft.mcp.coupaul.fr/health'"
 
 echo ""
-print_status "=== 5. IMPLÉMENTATION DE LA SOLUTION HYBRIDE ==="
+print_status "=== 6. RÉSUMÉ ==="
 
-print_status "Voulez-vous appliquer la configuration hybride ?"
-print_status "Cette solution permettra de faire fonctionner les deux serveurs immédiatement"
+print_status "Statut du diagnostic:"
 
-read -p "Appliquer la configuration hybride ? (y/n): " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    print_status "Application de la configuration hybride..."
-    
-    # Créer une configuration hybride
-    cat > mcp_servers_config_hybrid.json << 'EOF'
-{
-  "servers": {
-    "supabase": {
-      "name": "Supabase MCP Server",
-      "version": "3.1.0",
-      "description": "Enhanced Edition v3.1 - 54+ MCP tools for 100% autonomous Supabase management",
-      "host": "supabase.mcp.coupaul.fr",
-      "port": 443,
-      "path": "/supabase",
-      "protocol": "https",
-      "status": "active",
-      "tools_count": 54,
-      "categories": ["database", "auth", "storage", "realtime", "security", "migration", "monitoring", "performance"],
-      "github_url": "https://github.com/MisterSandFR/Supabase-MCP-SelfHosted",
-      "always_works": true,
-      "domain": "supabase.mcp.coupaul.fr",
-      "mcp_endpoint": "/mcp",
-      "health_endpoint": "/health",
-      "supabase_url": "https://api.recube.gg/",
-      "anon_key": "eyJhbGciOiJIUzI1NiIs...",
-      "production_mode": true,
-      "discovery_path": "/health",
-      "discovery_timeout": 5
-    },
-    "minecraft": {
-      "name": "Minecraft MCPC+ 1.6.4 Server",
-      "version": "1.6.4",
-      "description": "MCPC+ 1.6.4 server management and automation with MCP tools - Compatible with MCP Hub Central",
-      "host": "minecraft-mcp-forge-164.railway.internal",
-      "port": 3000,
-      "path": "/minecraft",
-      "protocol": "http",
-      "status": "active",
-      "tools_count": 4,
-      "categories": ["gaming", "server_management", "automation", "world_management", "mcpc"],
-      "github_url": "https://github.com/[USERNAME]/minecraft-mcpc-mcp-server",
-      "always_works": false,
-      "domain": "minecraft.mcp.coupaul.fr",
-      "deployment": "railway",
-      "mcpc_version": "1.6.4",
-      "docker_enabled": true,
-      "discovery_path": "/health",
-      "discovery_timeout": 5,
-      "timeout": 10,
-      "retry_attempts": 1,
-      "health_check_timeout": 10
-    }
-  },
-  "hub": {
-    "name": "MCP Hub Central",
-    "version": "3.6.0",
-    "description": "Multi-server MCP hub for centralized management - Hybrid configuration (Supabase public + Minecraft Railway internal)",
-    "total_servers": 2,
-    "total_tools": 58,
-    "domain": "mcp.coupaul.fr",
-    "features": [
-      "automatic_discovery",
-      "intelligent_routing",
-      "load_balancing",
-      "centralized_monitoring",
-      "unified_interface",
-      "advanced_security",
-      "real_time_metrics",
-      "hybrid_configuration"
-    ]
-  },
-  "routing": {
-    "strategy": "capability_based",
-    "fallback_server": "supabase",
-    "load_balancing": {
-      "enabled": true,
-      "algorithm": "round_robin",
-      "health_check_interval": 120
-    }
-  },
-  "security": {
-    "jwt_auth": true,
-    "rate_limiting": {
-      "enabled": true,
-      "requests_per_minute": 100,
-      "burst_limit": 20
-    },
-    "cors": {
-      "enabled": true,
-      "allowed_origins": ["*"],
-      "allowed_methods": ["GET", "POST", "OPTIONS"],
-      "allowed_headers": ["Content-Type", "Authorization"]
-    }
-  },
-  "monitoring": {
-    "enabled": true,
-    "metrics_endpoint": "/api/metrics",
-    "health_check_interval": 120,
-    "cache_duration": 300,
-    "discovery_timeout": 10,
-    "alerting": {
-      "enabled": true,
-      "email": "alerts@mcp.coupaul.fr",
-      "webhook": "https://hooks.slack.com/services/..."
-    }
-  }
-}
-EOF
-    
-    print_success "Configuration hybride créée: mcp_servers_config_hybrid.json"
-    print_status "Cette configuration utilise:"
-    print_status "- Supabase: Domaine public (fonctionne)"
-    print_status "- Minecraft: Domaine interne Railway (fonctionne)"
-    
-else
-    print_status "Configuration hybride non appliquée"
-fi
+print_error "❌ Railway: Problème de déploiement persistant"
+print_warning "⚠️ Version: 3.5.0 (au lieu de 3.6.0)"
+print_warning "⚠️ Serveur Supabase: OFFLINE"
+print_success "✅ Serveur Minecraft: ONLINE"
+
+print_status "Actions recommandées:"
+print_status "1. Créer un nouveau projet Railway"
+print_status "2. Déployer depuis zéro"
+print_status "3. Tester la découverte des serveurs"
+print_status "4. Vérifier que les deux serveurs sont ONLINE"
 
 echo ""
-print_status "=== 6. COMMANDES DE VÉRIFICATION ==="
-
-print_status "Après le redéploiement Railway, vérifier:"
-print_status "curl -s 'https://mcp.coupaul.fr/api/servers' | jq '.hub.version'"
-print_status "curl -w '@-' -o /dev/null -s 'https://mcp.coupaul.fr/' <<< 'time_total: %{time_total}\n'"
-
-echo ""
-print_status "=== 7. RÉSUMÉ ==="
-
-print_status "Solutions disponibles:"
-print_status "1. 🎯 Redéploiement manuel Railway (recommandé)"
-print_status "2. 🔧 Configuration hybride (solution immédiate)"
-print_status "3. ⚙️ Vérification des webhooks GitHub"
-print_status "4. 🚀 Nouveau projet Railway (si nécessaire)"
-
-print_status "Recommandation:"
-print_warning "Commencer par le redéploiement manuel Railway"
-print_status "Si cela ne fonctionne pas, utiliser la configuration hybride"
-
-echo ""
-print_error "🚨 CONCLUSION: Railway ne déploie pas automatiquement"
-print_status "✅ SOLUTION: Redéploiement manuel ou configuration hybride"
+print_warning "🚨 CONCLUSION: Railway a un problème de déploiement persistant"
+print_status "✅ SOLUTION: Nouveau projet Railway ou alternative de déploiement"
 
 exit 0

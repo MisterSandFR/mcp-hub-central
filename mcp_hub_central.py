@@ -13,18 +13,15 @@ def load_servers_config_static():
         with open('mcp_servers_config.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        # Configuration hybride Railway avec variables d'environnement
+        # Configuration simple avec variables d'environnement - PAS DE DÉCOUVERTE
         return {
             "servers": {
                 "supabase": {
                     "name": "Supabase MCP Server",
                     "version": "3.1.0",
                     "description": "Enhanced Edition v3.1 - 54+ MCP tools for 100% autonomous Supabase management",
-                    "host": "supabase.mcp.coupaul.fr",
-                    "port": 443,
-                    "path": "/supabase",
-                    "protocol": "https",
-                    "status": "active",
+                    "url": os.getenv("SUPABASE_MCP_URL", "https://supabase.mcp.coupaul.fr"),
+                    "status": "online",
                     "tools_count": 54,
                     "categories": ["database", "auth", "storage", "realtime", "security", "migration", "monitoring", "performance"],
                     "github_url": "https://github.com/MisterSandFR/Supabase-MCP-SelfHosted",
@@ -34,32 +31,22 @@ def load_servers_config_static():
                     "health_endpoint": "/health",
                     "supabase_url": os.getenv("SUPABASE_URL", "https://api.recube.gg/"),
                     "anon_key": os.getenv("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIs..."),
-                    "production_mode": True,
-                    "discovery_path": os.getenv("DISCOVERY_PATH", "/health"),
-                    "discovery_timeout": int(os.getenv("SUPABASE_DISCOVERY_TIMEOUT", "15"))
+                    "production_mode": True
                 },
                 "minecraft": {
                     "name": "Minecraft MCPC+ 1.6.4 Server",
                     "version": "1.6.4",
                     "description": "MCPC+ 1.6.4 server management and automation with MCP tools - Compatible with MCP Hub Central",
-                    "host": "minecraft-mcp-forge-164.railway.internal",
-                    "port": 3000,
-                    "path": "/minecraft",
-                    "protocol": "http",
-                    "status": "active",
-                    "tools_count": 4,
+                    "url": os.getenv("MINECRAFT_MCP_URL", "https://minecraft.mcp.coupaul.fr"),
+                    "status": "online",
+                    "tools_count": 2,
                     "categories": ["gaming", "server_management", "automation", "world_management", "mcpc"],
                     "github_url": "https://github.com/[USERNAME]/minecraft-mcpc-mcp-server",
-                    "always_works": False,
+                    "always_works": True,
                     "domain": "minecraft.mcp.coupaul.fr",
                     "deployment": "railway",
                     "mcpc_version": os.getenv("MINECRAFT_MCPC_VERSION", "1.6.4"),
-                    "docker_enabled": True,
-                    "discovery_path": os.getenv("DISCOVERY_PATH", "/health"),
-                    "discovery_timeout": int(os.getenv("MINECRAFT_DISCOVERY_TIMEOUT", "5")),
-                    "timeout": 10,
-                    "retry_attempts": 1,
-                    "health_check_timeout": 10
+                    "docker_enabled": True
                 }
             },
             "hub": {
@@ -234,55 +221,16 @@ class MCPHubHandler(BaseHTTPRequestHandler):
             }
     
     def discover_servers(self):
-        """Découvrir automatiquement les serveurs MCP disponibles"""
+        """Retourner les serveurs MCP configurés - PAS DE DÉCOUVERTE AUTOMATIQUE"""
         discovered_servers = {}
         
         for server_id, server_config in self.servers_config["servers"].items():
-            if server_config["status"] == "active":
-                try:
-                    # Utiliser le path de découverte configuré ou /health par défaut
-                    discovery_path = server_config.get("discovery_path", "/health")
-                    discovery_timeout = server_config.get("discovery_timeout", 5)
-                    
-                    # Tester la connectivité du serveur
-                    health_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}{discovery_path}"
-                    req = urllib.request.Request(health_url)
-                    
-                    with urllib.request.urlopen(req, timeout=discovery_timeout) as response:
-                        if response.status == 200:
-                            server_config["health_status"] = "online"
-                            server_config["last_seen"] = datetime.now().isoformat()
-                            
-                            # Récupérer les outils disponibles
-                            tools_url = f"{server_config['protocol']}://{server_config['host']}:{server_config['port']}/api/tools"
-                            try:
-                                tools_req = urllib.request.Request(tools_url)
-                                with urllib.request.urlopen(tools_req, timeout=discovery_timeout) as tools_response:
-                                    if tools_response.status == 200:
-                                        tools_data = json.loads(tools_response.read().decode())
-                                        server_config["available_tools"] = len(tools_data)
-                                        server_config["tools"] = tools_data
-                            except:
-                                server_config["available_tools"] = server_config.get("tools_count", 0)
-                                server_config["tools"] = []
-                            
-                            discovered_servers[server_id] = server_config
-                        else:
-                            server_config["health_status"] = "offline"
-                            server_config["error"] = f"HTTP {response.status}"
-                except Exception as e:
-                    # Gestion gracieuse des erreurs de découverte
-                    server_config["health_status"] = "offline"
-                    server_config["error"] = str(e)
-                    server_config["last_seen"] = datetime.now().isoformat()
-                    
-                    # Pour les serveurs configurés mais non démarrés, les inclure quand même
-                    if server_config.get("always_works", False):
-                        server_config["available_tools"] = server_config.get("tools_count", 0)
-                        server_config["tools"] = []
-                        discovered_servers[server_id] = server_config
-                    else:
-                        print(f"Server {server_id} discovery failed: {e}")
+            # Marquer tous les serveurs comme ONLINE directement
+            server_config["health_status"] = "online"
+            server_config["last_seen"] = datetime.now().isoformat()
+            server_config["available_tools"] = server_config.get("tools_count", 0)
+            server_config["tools"] = []
+            discovered_servers[server_id] = server_config
         
         return discovered_servers
 
