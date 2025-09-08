@@ -6,6 +6,116 @@ from datetime import datetime
 import threading
 import time
 
+def load_servers_config_static():
+    """Charger la configuration des serveurs MCP (fonction statique)"""
+    try:
+        with open('mcp_servers_config.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        # Configuration hybride Railway si le fichier n'existe pas
+        return {
+            "servers": {
+                "supabase": {
+                    "name": "Supabase MCP Server",
+                    "version": "3.1.0",
+                    "description": "Enhanced Edition v3.1 - 54+ MCP tools for 100% autonomous Supabase management",
+                    "host": "supabase.mcp.coupaul.fr",
+                    "port": 443,
+                    "path": "/supabase",
+                    "protocol": "https",
+                    "status": "active",
+                    "tools_count": 54,
+                    "categories": ["database", "auth", "storage", "realtime", "security", "migration", "monitoring", "performance"],
+                    "github_url": "https://github.com/MisterSandFR/Supabase-MCP-SelfHosted",
+                    "always_works": True,
+                    "domain": "supabase.mcp.coupaul.fr",
+                    "mcp_endpoint": "/mcp",
+                    "health_endpoint": "/health",
+                    "supabase_url": "https://api.recube.gg/",
+                    "anon_key": "eyJhbGciOiJIUzI1NiIs...",
+                    "production_mode": True,
+                    "discovery_path": "/health",
+                    "discovery_timeout": 5
+                },
+                "minecraft": {
+                    "name": "Minecraft MCPC+ 1.6.4 Server",
+                    "version": "1.6.4",
+                    "description": "MCPC+ 1.6.4 server management and automation with MCP tools - Compatible with MCP Hub Central",
+                    "host": "minecraft-mcp-forge-164.railway.internal",
+                    "port": 3000,
+                    "path": "/minecraft",
+                    "protocol": "http",
+                    "status": "active",
+                    "tools_count": 4,
+                    "categories": ["gaming", "server_management", "automation", "world_management", "mcpc"],
+                    "github_url": "https://github.com/[USERNAME]/minecraft-mcpc-mcp-server",
+                    "always_works": False,
+                    "domain": "minecraft.mcp.coupaul.fr",
+                    "deployment": "railway",
+                    "mcpc_version": "1.6.4",
+                    "docker_enabled": True,
+                    "discovery_path": "/health",
+                    "discovery_timeout": 5,
+                    "timeout": 10,
+                    "retry_attempts": 1,
+                    "health_check_timeout": 10
+                }
+            },
+            "hub": {
+                "name": "MCP Hub Central",
+                "version": "3.6.0",
+                "description": "Multi-server MCP hub for centralized management - Hybrid configuration (Supabase public + Minecraft Railway internal)",
+                "total_servers": 2,
+                "total_tools": 58,
+                "domain": "mcp.coupaul.fr",
+                "features": [
+                    "automatic_discovery",
+                    "intelligent_routing",
+                    "load_balancing",
+                    "centralized_monitoring",
+                    "unified_interface",
+                    "advanced_security",
+                    "real_time_metrics",
+                    "hybrid_configuration"
+                ]
+            },
+            "routing": {
+                "strategy": "capability_based",
+                "fallback_server": "supabase",
+                "load_balancing": {
+                    "enabled": True,
+                    "algorithm": "round_robin",
+                    "health_check_interval": 120
+                }
+            },
+            "security": {
+                "jwt_auth": True,
+                "rate_limiting": {
+                    "enabled": True,
+                    "requests_per_minute": 100,
+                    "burst_limit": 20
+                },
+                "cors": {
+                    "enabled": True,
+                    "allowed_origins": ["*"],
+                    "allowed_methods": ["GET", "POST", "OPTIONS"],
+                    "allowed_headers": ["Content-Type", "Authorization"]
+                }
+            },
+            "monitoring": {
+                "enabled": True,
+                "metrics_endpoint": "/api/metrics",
+                "health_check_interval": 120,
+                "cache_duration": 300,
+                "discovery_timeout": 10,
+                "alerting": {
+                    "enabled": True,
+                    "email": "alerts@mcp.coupaul.fr",
+                    "webhook": "https://hooks.slack.com/services/..."
+                }
+            }
+        }
+
 class MCPHubHandler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         # Charger la configuration des serveurs
@@ -373,11 +483,18 @@ def run_server(port=8080):
     print(f"🚀 Starting MCP Hub on port {port}")
     
     # Découvrir les serveurs au démarrage
-    handler = MCPHubHandler()
-    discovered_servers = handler.discover_servers()
-    total_tools = sum(s.get('available_tools', 0) for s in discovered_servers.values())
+    try:
+        # Créer une instance temporaire pour découvrir les serveurs
+        temp_handler = MCPHubHandler.__new__(MCPHubHandler)
+        temp_handler.servers_config = load_servers_config_static()
+        discovered_servers = temp_handler.discover_servers()
+        total_tools = sum(s.get('available_tools', 0) for s in discovered_servers.values())
+        
+        print(f"📊 Serving {len(discovered_servers)} MCP servers with {total_tools} tools")
+    except Exception as e:
+        print(f"⚠️ Error discovering servers: {e}")
+        print(f"📊 Serving 2 MCP servers with 58 tools (estimated)")
     
-    print(f"📊 Serving {len(discovered_servers)} MCP servers with {total_tools} tools")
     print(f"🌐 Access at: http://localhost:{port}")
     print(f"🔧 Well-known endpoint: /.well-known/mcp-config")
     print(f"✅ MCP Hub running on port {port}")
